@@ -12,9 +12,9 @@ function isProtectedRoute(pathname: string): boolean {
   return pathname === "/dashboard" || pathname.startsWith("/dashboard/");
 }
 
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const isAuthenticated = isAuthenticatedRequest(request);
+  const isAuthenticated = await isAuthenticatedRequest(request);
   const isPublicRoute = PUBLIC_ROUTES.has(pathname);
 
   if (isProtectedRoute(pathname) && !isAuthenticated) {

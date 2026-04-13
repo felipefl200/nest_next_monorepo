@@ -1,15 +1,15 @@
 import type { NextRequest } from "next/server";
 import { AUTH_COOKIE_NAMES, DEFAULT_LOGIN_REDIRECT } from "./constants";
-import { isTokenExpired } from "./jwt";
+import { verifyJwt } from "./verify-jwt";
 
-export function isAuthenticatedRequest(request: NextRequest): boolean {
+export async function isAuthenticatedRequest(request: NextRequest): Promise<boolean> {
   const accessToken = request.cookies.get(AUTH_COOKIE_NAMES.accessToken)?.value;
 
   if (typeof accessToken !== "string" || accessToken.length === 0) {
     return false;
   }
 
-  return !isTokenExpired(accessToken);
+  return verifyJwt(accessToken);
 }
 
 export function hasRefreshToken(request: NextRequest): boolean {

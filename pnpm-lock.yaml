@@ -71,7 +71,7 @@ importers:
     devDependencies:
       '@nestjs/cli':
         specifier: ^11.0.17
-        version: 11.0.18(@swc/cli@0.8.1(@swc/core@1.15.24(@swc/helpers@0.5.15))(chokidar@4.0.3))(@swc/core@1.15.24(@swc/helpers@0.5.15))(@types/node@25.5.2)(esbuild@0.27.7)
+        version: 11.0.18(@swc/cli@0.8.1(@swc/core@1.15.24(@swc/helpers@0.5.15))(chokidar@4.0.3))(@swc/core@1.15.24(@swc/helpers@0.5.15))(@types/node@25.5.2)
       '@nestjs/schematics':
         specifier: ^11.0.10
         version: 11.0.10(chokidar@4.0.3)(typescript@6.0.2)
@@ -110,7 +110,7 @@ importers:
         version: 0.5.21
       ts-loader:
         specifier: ^9.5.7
-        version: 9.5.7(typescript@6.0.2)(webpack@5.105.4(@swc/core@1.15.24(@swc/helpers@0.5.15))(esbuild@0.27.7))
+        version: 9.5.7(typescript@6.0.2)(webpack@5.105.4(@swc/core@1.15.24(@swc/helpers@0.5.15)))
       tsconfig-paths:
         specifier: ^4.2.0
         version: 4.2.0
@@ -120,9 +120,6 @@ importers:
       typescript:
         specifier: ^6.0.2
         version: 6.0.2
-      vitest:
-        specifier: ^4.1.2
-        version: 4.1.3(@types/node@25.5.2)(msw@2.13.2(@types/node@25.5.2)(typescript@6.0.2))(vite@8.0.7(@types/node@25.5.2)(esbuild@0.27.7)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0))
 
   apps/web:
     dependencies:
@@ -132,6 +129,9 @@ importers:
       '@repo/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      jose:
+        specifier: ^6.2.2
+        version: 6.2.2
       next:
         specifier: ^16.2.2
         version: 16.2.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -160,6 +160,9 @@ importers:
       typescript:
         specifier: 6.0.2
         version: 6.0.2
+      vitest:
+        specifier: ^4.1.2
+        version: 4.1.3(@types/node@25.5.2)(msw@2.13.2(@types/node@25.5.2)(typescript@6.0.2))(vite@8.0.7(@types/node@25.5.2)(esbuild@0.27.7)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0))
 
   packages/config:
     dependencies:
@@ -6008,7 +6011,7 @@ snapshots:
       '@tybys/wasm-util': 0.10.1
     optional: true
 
-  '@nestjs/cli@11.0.18(@swc/cli@0.8.1(@swc/core@1.15.24(@swc/helpers@0.5.15))(chokidar@4.0.3))(@swc/core@1.15.24(@swc/helpers@0.5.15))(@types/node@25.5.2)(esbuild@0.27.7)':
+  '@nestjs/cli@11.0.18(@swc/cli@0.8.1(@swc/core@1.15.24(@swc/helpers@0.5.15))(chokidar@4.0.3))(@swc/core@1.15.24(@swc/helpers@0.5.15))(@types/node@25.5.2)':
     dependencies:
       '@angular-devkit/core': 19.2.23(chokidar@4.0.3)
       '@angular-devkit/schematics': 19.2.23(chokidar@4.0.3)
@@ -6019,14 +6022,14 @@ snapshots:
       chokidar: 4.0.3
       cli-table3: 0.6.5
       commander: 4.1.1
-      fork-ts-checker-webpack-plugin: 9.1.0(typescript@5.9.3)(webpack@5.105.4(@swc/core@1.15.24(@swc/helpers@0.5.15))(esbuild@0.27.7))
+      fork-ts-checker-webpack-plugin: 9.1.0(typescript@5.9.3)(webpack@5.105.4(@swc/core@1.15.24(@swc/helpers@0.5.15)))
       glob: 13.0.6
       node-emoji: 1.11.0
       ora: 5.4.1
       tsconfig-paths: 4.2.0
       tsconfig-paths-webpack-plugin: 4.2.0
       typescript: 5.9.3
-      webpack: 5.105.4(@swc/core@1.15.24(@swc/helpers@0.5.15))(esbuild@0.27.7)
+      webpack: 5.105.4(@swc/core@1.15.24(@swc/helpers@0.5.15))
       webpack-node-externals: 3.0.0
     optionalDependencies:
       '@swc/cli': 0.8.1(@swc/core@1.15.24(@swc/helpers@0.5.15))(chokidar@4.0.3)
@@ -8013,6 +8016,10 @@ snapshots:
     optionalDependencies:
       picomatch: 4.0.3
 
+  fdir@6.5.0(picomatch@4.0.4):
+    optionalDependencies:
+      picomatch: 4.0.4
+
   fetch-blob@3.2.0:
     dependencies:
       node-domexception: 1.0.0
@@ -8082,7 +8089,7 @@ snapshots:
       cross-spawn: 7.0.6
       signal-exit: 4.1.0
 
-  fork-ts-checker-webpack-plugin@9.1.0(typescript@5.9.3)(webpack@5.105.4(@swc/core@1.15.24(@swc/helpers@0.5.15))(esbuild@0.27.7)):
+  fork-ts-checker-webpack-plugin@9.1.0(typescript@5.9.3)(webpack@5.105.4(@swc/core@1.15.24(@swc/helpers@0.5.15))):
     dependencies:
       '@babel/code-frame': 7.29.0
       chalk: 4.1.2
@@ -8097,7 +8104,7 @@ snapshots:
       semver: 7.7.3
       tapable: 2.3.2
       typescript: 5.9.3
-      webpack: 5.105.4(@swc/core@1.15.24(@swc/helpers@0.5.15))(esbuild@0.27.7)
+      webpack: 5.105.4(@swc/core@1.15.24(@swc/helpers@0.5.15))
 
   form-data-encoder@4.1.0: {}
 
@@ -9767,16 +9774,15 @@ snapshots:
       - bare-abort-controller
       - react-native-b4a
 
-  terser-webpack-plugin@5.4.0(@swc/core@1.15.24(@swc/helpers@0.5.15))(esbuild@0.27.7)(webpack@5.105.4(@swc/core@1.15.24(@swc/helpers@0.5.15))(esbuild@0.27.7)):
+  terser-webpack-plugin@5.4.0(@swc/core@1.15.24(@swc/helpers@0.5.15))(webpack@5.105.4(@swc/core@1.15.24(@swc/helpers@0.5.15))):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
       jest-worker: 27.5.1
       schema-utils: 4.3.3
       terser: 5.46.1
-      webpack: 5.105.4(@swc/core@1.15.24(@swc/helpers@0.5.15))(esbuild@0.27.7)
+      webpack: 5.105.4(@swc/core@1.15.24(@swc/helpers@0.5.15))
     optionalDependencies:
       '@swc/core': 1.15.24(@swc/helpers@0.5.15)
-      esbuild: 0.27.7
 
   terser@5.46.1:
     dependencies:
@@ -9805,8 +9811,8 @@ snapshots:
 
   tinyglobby@0.2.15:
     dependencies:
-      fdir: 6.5.0(picomatch@4.0.3)
-      picomatch: 4.0.3
+      fdir: 6.5.0(picomatch@4.0.4)
+      picomatch: 4.0.4
 
   tinyrainbow@3.1.0: {}
 
@@ -9836,7 +9842,7 @@ snapshots:
     dependencies:
       typescript: 6.0.2
 
-  ts-loader@9.5.7(typescript@6.0.2)(webpack@5.105.4(@swc/core@1.15.24(@swc/helpers@0.5.15))(esbuild@0.27.7)):
+  ts-loader@9.5.7(typescript@6.0.2)(webpack@5.105.4(@swc/core@1.15.24(@swc/helpers@0.5.15))):
     dependencies:
       chalk: 4.1.2
       enhanced-resolve: 5.20.1
@@ -9844,7 +9850,7 @@ snapshots:
       semver: 7.7.3
       source-map: 0.7.6
       typescript: 6.0.2
-      webpack: 5.105.4(@swc/core@1.15.24(@swc/helpers@0.5.15))(esbuild@0.27.7)
+      webpack: 5.105.4(@swc/core@1.15.24(@swc/helpers@0.5.15))
 
   ts-morph@26.0.0:
     dependencies:
@@ -10036,7 +10042,7 @@ snapshots:
       magic-string: 0.30.21
       obug: 2.1.1
       pathe: 2.0.3
-      picomatch: 4.0.3
+      picomatch: 4.0.4
       std-env: 4.0.0
       tinybench: 2.9.0
       tinyexec: 1.1.1
@@ -10066,7 +10072,7 @@ snapshots:
 
   webpack-sources@3.3.4: {}
 
-  webpack@5.105.4(@swc/core@1.15.24(@swc/helpers@0.5.15))(esbuild@0.27.7):
+  webpack@5.105.4(@swc/core@1.15.24(@swc/helpers@0.5.15)):
     dependencies:
       '@types/eslint-scope': 3.7.7
       '@types/estree': 1.0.8
@@ -10090,7 +10096,7 @@ snapshots:
       neo-async: 2.6.2
       schema-utils: 4.3.3
       tapable: 2.3.2
-      terser-webpack-plugin: 5.4.0(@swc/core@1.15.24(@swc/helpers@0.5.15))(esbuild@0.27.7)(webpack@5.105.4(@swc/core@1.15.24(@swc/helpers@0.5.15))(esbuild@0.27.7))
+      terser-webpack-plugin: 5.4.0(@swc/core@1.15.24(@swc/helpers@0.5.15))(webpack@5.105.4(@swc/core@1.15.24(@swc/helpers@0.5.15)))
       watchpack: 2.5.1
       webpack-sources: 3.3.4
     transitivePeerDependencies:
