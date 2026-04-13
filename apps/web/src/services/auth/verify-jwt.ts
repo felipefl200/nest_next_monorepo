@@ -16,6 +16,8 @@ async function getPublicKey() {
   const publicKeyPem = getRequiredEnv("JWT_PUBLIC_KEY");
 
   if (publicKeyPem === null) {
+    cachedPublicKeyPem = null;
+    cachedPublicKeyPromise = null;
     return null;
   }
 
@@ -30,13 +32,18 @@ async function getPublicKey() {
 export async function verifyJwt(token: string): Promise<boolean> {
   const issuer = getRequiredEnv("JWT_ISSUER");
   const audience = getRequiredEnv("JWT_AUDIENCE");
-  const publicKey = await getPublicKey();
-
-  if (issuer === null || audience === null || publicKey === null) {
+  
+  if (issuer === null || audience === null) {
     return false;
   }
 
   try {
+    const publicKey = await getPublicKey();
+
+    if (publicKey === null) {
+      return false;
+    }
+
     await jwtVerify(token, publicKey, {
       algorithms: ["RS256"],
       issuer,

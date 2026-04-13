@@ -83,4 +83,11 @@ describe("verifyJwt", () => {
 
     await expect(verifyJwt("not-a-jwt")).resolves.toBe(false);
   });
+
+  it("fails closed when JWT_PUBLIC_KEY is invalid", async () => {
+    const { token } = await createSignedToken();
+    process.env.JWT_PUBLIC_KEY = "invalid-public-key";
+
+    await expect(verifyJwt(token)).resolves.toBe(false);
+  });
 });

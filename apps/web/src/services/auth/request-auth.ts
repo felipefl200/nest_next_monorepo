@@ -12,6 +12,11 @@ export async function isAuthenticatedRequest(request: NextRequest): Promise<bool
   return verifyJwt(accessToken);
 }
 
+export function hasAccessToken(request: NextRequest): boolean {
+  const accessToken = request.cookies.get(AUTH_COOKIE_NAMES.accessToken)?.value;
+  return typeof accessToken === "string" && accessToken.length > 0;
+}
+
 export function hasRefreshToken(request: NextRequest): boolean {
   const refreshToken = request.cookies.get(AUTH_COOKIE_NAMES.refreshToken)?.value;
   return typeof refreshToken === "string" && refreshToken.length > 0;
