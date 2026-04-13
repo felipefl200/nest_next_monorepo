@@ -36,6 +36,7 @@ export class LoginUseCase {
       jwtAudience: this.configService.get("JWT_AUDIENCE", { infer: true }),
       accessTokenExpiresIn: this.configService.get("JWT_ACCESS_TOKEN_EXPIRES_IN", { infer: true }),
       refreshTokenExpiresIn: this.configService.get("JWT_REFRESH_TOKEN_EXPIRES_IN", { infer: true }),
+      authCheckIpOnRefresh: this.configService.get("AUTH_CHECK_IP_ON_REFRESH", { infer: true }),
     };
   }
 

@@ -4,6 +4,7 @@ import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
 import { ApiEnv } from "@repo/config";
 import { AppModule } from "./app.module";
+import { attachCorrelationId } from "./presentation/http/correlation-id.middleware";
 
 loadEnv();
 
@@ -37,6 +38,8 @@ async function bootstrap() {
       },
     }),
   );
+
+  app.use(attachCorrelationId);
 
   await app.listen(port);
 }

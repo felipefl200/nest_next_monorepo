@@ -11,38 +11,14 @@ type RateLimitWhere = {
   key: string;
 };
 
-type IncrementInput = {
-  increment: number;
-};
-
-type RateLimitUpdateData = {
-  count?: number | IncrementInput;
-  expiresAt?: Date;
-  updatedAt?: Date;
-};
-
-type RateLimitCreateData = {
-  key: string;
-  count: number;
-  expiresAt: Date;
-};
-
 type RateLimitDelegate = {
   findUnique(args: { where: RateLimitWhere }): Promise<RateLimitEntryRecord | null>;
-  upsert(args: {
-    where: RateLimitWhere;
-    create: RateLimitCreateData;
-    update: RateLimitUpdateData;
-  }): Promise<RateLimitEntryRecord>;
-  update(args: {
-    where: RateLimitWhere;
-    data: RateLimitUpdateData;
-  }): Promise<RateLimitEntryRecord>;
   delete(args: { where: RateLimitWhere }): Promise<RateLimitEntryRecord>;
 };
 
 export type PrismaRateLimitClient = {
   rateLimitEntry: RateLimitDelegate;
+  $queryRaw<T>(query: TemplateStringsArray, ...values: unknown[]): Promise<T>;
 };
 
 export class PrismaRateLimitStore implements IRateLimitStore {
@@ -58,38 +34,31 @@ export class PrismaRateLimitStore implements IRateLimitStore {
     }
 
     const now = new Date();
-    const currentEntry = await this.prisma.rateLimitEntry.findUnique({
-      where: { key },
-    });
+    const expiresAt = new Date(now.getTime() + windowSeconds * 1000);
+    const [entry] = await this.prisma.$queryRaw<Array<{ count: number }>>`
+      INSERT INTO "RateLimitEntry" ("key", "count", "expiresAt", "updatedAt")
+      VALUES (${key}, 1, ${expiresAt}, ${now})
+      ON CONFLICT ("key") DO UPDATE
+      SET
+        "count" = CASE
+          WHEN "RateLimitEntry"."expiresAt" > ${now}
+          THEN "RateLimitEntry"."count" + 1
+          ELSE 1
+        END,
+        "expiresAt" = CASE
+          WHEN "RateLimitEntry"."expiresAt" > ${now}
+          THEN "RateLimitEntry"."expiresAt"
+          ELSE ${expiresAt}
+        END,
+        "updatedAt" = ${now}
+      RETURNING "count"
+    `;
 
-    if (currentEntry === null || currentEntry.expiresAt.getTime() <= now.getTime()) {
-      const expiresAt = new Date(now.getTime() + windowSeconds * 1000);
-      const resetEntry = await this.prisma.rateLimitEntry.upsert({
-        where: { key },
-        create: {
-          key,
-          count: 1,
-          expiresAt,
-        },
-        update: {
-          count: 1,
-          expiresAt,
-          updatedAt: now,
-        },
-      });
-
-      return resetEntry.count;
+    if (entry === undefined) {
+      throw new Error("Atomic rate limit increment did not return a count");
     }
 
-    const updatedEntry = await this.prisma.rateLimitEntry.update({
-      where: { key },
-      data: {
-        count: { increment: 1 },
-        updatedAt: now,
-      },
-    });
-
-    return updatedEntry.count;
+    return entry.count;
   }
 
   public async reset(key: string): Promise<void> {

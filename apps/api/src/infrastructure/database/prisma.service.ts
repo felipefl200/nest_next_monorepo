@@ -194,6 +194,7 @@ type PrismaCoreClient = PrismaAuthSessionClient &
   PrismaDomainClient & {
     $connect(): Promise<void>;
     $disconnect(): Promise<void>;
+    $queryRaw<T>(query: TemplateStringsArray, ...values: unknown[]): Promise<T>;
   };
 
 type PrismaServiceInit = {
@@ -239,6 +240,10 @@ export class PrismaService
 
   public get rateLimitEntry(): PrismaRateLimitClient["rateLimitEntry"] {
     return this.client.rateLimitEntry;
+  }
+
+  public $queryRaw<T>(query: TemplateStringsArray, ...values: unknown[]): Promise<T> {
+    return this.client.$queryRaw<T>(query, ...values);
   }
 
   public get customer(): PrismaDomainClient["customer"] {

@@ -1,0 +1,742 @@
+.
+├── README.md
+├── apps
+│   ├── api
+│   │   ├── dist
+│   │   │   ├── app.controller.d.ts
+│   │   │   ├── app.controller.d.ts.map
+│   │   │   ├── app.controller.js
+│   │   │   ├── app.controller.js.map
+│   │   │   ├── app.module.d.ts
+│   │   │   ├── app.module.d.ts.map
+│   │   │   ├── app.module.js
+│   │   │   ├── app.module.js.map
+│   │   │   ├── app.service.d.ts
+│   │   │   ├── app.service.d.ts.map
+│   │   │   ├── app.service.js
+│   │   │   ├── app.service.js.map
+│   │   │   ├── application
+│   │   │   │   ├── admin-users
+│   │   │   │   │   ├── create-managed-user.use-case.d.ts
+│   │   │   │   │   ├── create-managed-user.use-case.d.ts.map
+│   │   │   │   │   ├── create-managed-user.use-case.js
+│   │   │   │   │   ├── create-managed-user.use-case.js.map
+│   │   │   │   │   ├── deactivate-managed-user.use-case.d.ts
+│   │   │   │   │   ├── deactivate-managed-user.use-case.d.ts.map
+│   │   │   │   │   ├── deactivate-managed-user.use-case.js
+│   │   │   │   │   ├── deactivate-managed-user.use-case.js.map
+│   │   │   │   │   ├── list-managed-users.use-case.d.ts
+│   │   │   │   │   ├── list-managed-users.use-case.d.ts.map
+│   │   │   │   │   ├── list-managed-users.use-case.js
+│   │   │   │   │   ├── list-managed-users.use-case.js.map
+│   │   │   │   │   ├── update-managed-user.use-case.d.ts
+│   │   │   │   │   ├── update-managed-user.use-case.d.ts.map
+│   │   │   │   │   ├── update-managed-user.use-case.js
+│   │   │   │   │   └── update-managed-user.use-case.js.map
+│   │   │   │   ├── auth
+│   │   │   │   │   ├── auth.helpers.d.ts
+│   │   │   │   │   ├── auth.helpers.d.ts.map
+│   │   │   │   │   ├── auth.helpers.js
+│   │   │   │   │   ├── auth.helpers.js.map
+│   │   │   │   │   ├── auth.schemas.d.ts
+│   │   │   │   │   ├── auth.schemas.d.ts.map
+│   │   │   │   │   ├── auth.schemas.js
+│   │   │   │   │   ├── auth.schemas.js.map
+│   │   │   │   │   ├── auth.use-case.dependencies.d.ts
+│   │   │   │   │   ├── auth.use-case.dependencies.d.ts.map
+│   │   │   │   │   ├── auth.use-case.dependencies.js
+│   │   │   │   │   ├── auth.use-case.dependencies.js.map
+│   │   │   │   │   ├── get-current-user-profile.use-case.d.ts
+│   │   │   │   │   ├── get-current-user-profile.use-case.d.ts.map
+│   │   │   │   │   ├── get-current-user-profile.use-case.js
+│   │   │   │   │   ├── get-current-user-profile.use-case.js.map
+│   │   │   │   │   ├── login.use-case.d.ts
+│   │   │   │   │   ├── login.use-case.d.ts.map
+│   │   │   │   │   ├── login.use-case.js
+│   │   │   │   │   ├── login.use-case.js.map
+│   │   │   │   │   ├── logout-all.use-case.d.ts
+│   │   │   │   │   ├── logout-all.use-case.d.ts.map
+│   │   │   │   │   ├── logout-all.use-case.js
+│   │   │   │   │   ├── logout-all.use-case.js.map
+│   │   │   │   │   ├── logout.use-case.d.ts
+│   │   │   │   │   ├── logout.use-case.d.ts.map
+│   │   │   │   │   ├── logout.use-case.js
+│   │   │   │   │   ├── logout.use-case.js.map
+│   │   │   │   │   ├── refresh-session.use-case.d.ts
+│   │   │   │   │   ├── refresh-session.use-case.d.ts.map
+│   │   │   │   │   ├── refresh-session.use-case.js
+│   │   │   │   │   └── refresh-session.use-case.js.map
+│   │   │   │   ├── common
+│   │   │   │   │   ├── parse-duration.d.ts
+│   │   │   │   │   ├── parse-duration.d.ts.map
+│   │   │   │   │   ├── parse-duration.js
+│   │   │   │   │   └── parse-duration.js.map
+│   │   │   │   ├── customers
+│   │   │   │   │   ├── create-customer.use-case.d.ts
+│   │   │   │   │   ├── create-customer.use-case.d.ts.map
+│   │   │   │   │   ├── create-customer.use-case.js
+│   │   │   │   │   ├── create-customer.use-case.js.map
+│   │   │   │   │   ├── delete-customer.use-case.d.ts
+│   │   │   │   │   ├── delete-customer.use-case.d.ts.map
+│   │   │   │   │   ├── delete-customer.use-case.js
+│   │   │   │   │   ├── delete-customer.use-case.js.map
+│   │   │   │   │   ├── get-customer.use-case.d.ts
+│   │   │   │   │   ├── get-customer.use-case.d.ts.map
+│   │   │   │   │   ├── get-customer.use-case.js
+│   │   │   │   │   ├── get-customer.use-case.js.map
+│   │   │   │   │   ├── list-customers.use-case.d.ts
+│   │   │   │   │   ├── list-customers.use-case.d.ts.map
+│   │   │   │   │   ├── list-customers.use-case.js
+│   │   │   │   │   ├── list-customers.use-case.js.map
+│   │   │   │   │   ├── update-customer.use-case.d.ts
+│   │   │   │   │   ├── update-customer.use-case.d.ts.map
+│   │   │   │   │   ├── update-customer.use-case.js
+│   │   │   │   │   └── update-customer.use-case.js.map
+│   │   │   │   ├── dashboard
+│   │   │   │   │   ├── get-dashboard-overview.use-case.d.ts
+│   │   │   │   │   ├── get-dashboard-overview.use-case.d.ts.map
+│   │   │   │   │   ├── get-dashboard-overview.use-case.js
+│   │   │   │   │   └── get-dashboard-overview.use-case.js.map
+│   │   │   │   ├── orders
+│   │   │   │   │   ├── create-order.use-case.d.ts
+│   │   │   │   │   ├── create-order.use-case.d.ts.map
+│   │   │   │   │   ├── create-order.use-case.js
+│   │   │   │   │   ├── create-order.use-case.js.map
+│   │   │   │   │   ├── delete-order.use-case.d.ts
+│   │   │   │   │   ├── delete-order.use-case.d.ts.map
+│   │   │   │   │   ├── delete-order.use-case.js
+│   │   │   │   │   ├── delete-order.use-case.js.map
+│   │   │   │   │   ├── get-order.use-case.d.ts
+│   │   │   │   │   ├── get-order.use-case.d.ts.map
+│   │   │   │   │   ├── get-order.use-case.js
+│   │   │   │   │   ├── get-order.use-case.js.map
+│   │   │   │   │   ├── list-orders.use-case.d.ts
+│   │   │   │   │   ├── list-orders.use-case.d.ts.map
+│   │   │   │   │   ├── list-orders.use-case.js
+│   │   │   │   │   ├── list-orders.use-case.js.map
+│   │   │   │   │   ├── update-order.use-case.d.ts
+│   │   │   │   │   ├── update-order.use-case.d.ts.map
+│   │   │   │   │   ├── update-order.use-case.js
+│   │   │   │   │   └── update-order.use-case.js.map
+│   │   │   │   ├── products
+│   │   │   │   │   ├── create-product.use-case.d.ts
+│   │   │   │   │   ├── create-product.use-case.d.ts.map
+│   │   │   │   │   ├── create-product.use-case.js
+│   │   │   │   │   ├── create-product.use-case.js.map
+│   │   │   │   │   ├── delete-product.use-case.d.ts
+│   │   │   │   │   ├── delete-product.use-case.d.ts.map
+│   │   │   │   │   ├── delete-product.use-case.js
+│   │   │   │   │   ├── delete-product.use-case.js.map
+│   │   │   │   │   ├── get-product.use-case.d.ts
+│   │   │   │   │   ├── get-product.use-case.d.ts.map
+│   │   │   │   │   ├── get-product.use-case.js
+│   │   │   │   │   ├── get-product.use-case.js.map
+│   │   │   │   │   ├── list-products.use-case.d.ts
+│   │   │   │   │   ├── list-products.use-case.d.ts.map
+│   │   │   │   │   ├── list-products.use-case.js
+│   │   │   │   │   ├── list-products.use-case.js.map
+│   │   │   │   │   ├── update-product.use-case.d.ts
+│   │   │   │   │   ├── update-product.use-case.d.ts.map
+│   │   │   │   │   ├── update-product.use-case.js
+│   │   │   │   │   └── update-product.use-case.js.map
+│   │   │   │   └── settings
+│   │   │   │       ├── list-settings.use-case.d.ts
+│   │   │   │       ├── list-settings.use-case.d.ts.map
+│   │   │   │       ├── list-settings.use-case.js
+│   │   │   │       ├── list-settings.use-case.js.map
+│   │   │   │       ├── upsert-setting.use-case.d.ts
+│   │   │   │       ├── upsert-setting.use-case.d.ts.map
+│   │   │   │       ├── upsert-setting.use-case.js
+│   │   │   │       └── upsert-setting.use-case.js.map
+│   │   │   ├── domain
+│   │   │   │   ├── admin-users
+│   │   │   │   │   ├── admin-user.schemas.d.ts
+│   │   │   │   │   ├── admin-user.schemas.d.ts.map
+│   │   │   │   │   ├── admin-user.schemas.js
+│   │   │   │   │   ├── admin-user.schemas.js.map
+│   │   │   │   │   ├── admin-user.types.d.ts
+│   │   │   │   │   ├── admin-user.types.d.ts.map
+│   │   │   │   │   ├── admin-user.types.js
+│   │   │   │   │   └── admin-user.types.js.map
+│   │   │   │   ├── auth
+│   │   │   │   │   ├── auth-session.repository.d.ts
+│   │   │   │   │   ├── auth-session.repository.d.ts.map
+│   │   │   │   │   ├── auth-session.repository.js
+│   │   │   │   │   ├── auth-session.repository.js.map
+│   │   │   │   │   ├── auth-tokens.d.ts
+│   │   │   │   │   ├── auth-tokens.d.ts.map
+│   │   │   │   │   ├── auth-tokens.js
+│   │   │   │   │   ├── auth-tokens.js.map
+│   │   │   │   │   ├── auth.types.d.ts
+│   │   │   │   │   ├── auth.types.d.ts.map
+│   │   │   │   │   ├── auth.types.js
+│   │   │   │   │   ├── auth.types.js.map
+│   │   │   │   │   ├── ihash-provider.d.ts
+│   │   │   │   │   ├── ihash-provider.d.ts.map
+│   │   │   │   │   ├── ihash-provider.js
+│   │   │   │   │   ├── ihash-provider.js.map
+│   │   │   │   │   ├── ijwt-provider.d.ts
+│   │   │   │   │   ├── ijwt-provider.d.ts.map
+│   │   │   │   │   ├── ijwt-provider.js
+│   │   │   │   │   └── ijwt-provider.js.map
+│   │   │   │   ├── customers
+│   │   │   │   │   ├── customer.schemas.d.ts
+│   │   │   │   │   ├── customer.schemas.d.ts.map
+│   │   │   │   │   ├── customer.schemas.js
+│   │   │   │   │   ├── customer.schemas.js.map
+│   │   │   │   │   ├── customer.types.d.ts
+│   │   │   │   │   ├── customer.types.d.ts.map
+│   │   │   │   │   ├── customer.types.js
+│   │   │   │   │   └── customer.types.js.map
+│   │   │   │   ├── dashboard
+│   │   │   │   │   ├── dashboard.types.d.ts
+│   │   │   │   │   ├── dashboard.types.d.ts.map
+│   │   │   │   │   ├── dashboard.types.js
+│   │   │   │   │   └── dashboard.types.js.map
+│   │   │   │   ├── exceptions
+│   │   │   │   │   ├── api-error.d.ts
+│   │   │   │   │   ├── api-error.d.ts.map
+│   │   │   │   │   ├── api-error.js
+│   │   │   │   │   ├── api-error.js.map
+│   │   │   │   │   ├── app-exception.d.ts
+│   │   │   │   │   ├── app-exception.d.ts.map
+│   │   │   │   │   ├── app-exception.js
+│   │   │   │   │   ├── app-exception.js.map
+│   │   │   │   │   ├── conflict.exception.d.ts
+│   │   │   │   │   ├── conflict.exception.d.ts.map
+│   │   │   │   │   ├── conflict.exception.js
+│   │   │   │   │   ├── conflict.exception.js.map
+│   │   │   │   │   ├── forbidden.exception.d.ts
+│   │   │   │   │   ├── forbidden.exception.d.ts.map
+│   │   │   │   │   ├── forbidden.exception.js
+│   │   │   │   │   ├── forbidden.exception.js.map
+│   │   │   │   │   ├── not-found.exception.d.ts
+│   │   │   │   │   ├── not-found.exception.d.ts.map
+│   │   │   │   │   ├── not-found.exception.js
+│   │   │   │   │   ├── not-found.exception.js.map
+│   │   │   │   │   ├── rate-limit.exception.d.ts
+│   │   │   │   │   ├── rate-limit.exception.d.ts.map
+│   │   │   │   │   ├── rate-limit.exception.js
+│   │   │   │   │   ├── rate-limit.exception.js.map
+│   │   │   │   │   ├── unauthorized.exception.d.ts
+│   │   │   │   │   ├── unauthorized.exception.d.ts.map
+│   │   │   │   │   ├── unauthorized.exception.js
+│   │   │   │   │   └── unauthorized.exception.js.map
+│   │   │   │   ├── orders
+│   │   │   │   │   ├── order.schemas.d.ts
+│   │   │   │   │   ├── order.schemas.d.ts.map
+│   │   │   │   │   ├── order.schemas.js
+│   │   │   │   │   ├── order.schemas.js.map
+│   │   │   │   │   ├── order.types.d.ts
+│   │   │   │   │   ├── order.types.d.ts.map
+│   │   │   │   │   ├── order.types.js
+│   │   │   │   │   └── order.types.js.map
+│   │   │   │   ├── products
+│   │   │   │   │   ├── product.schemas.d.ts
+│   │   │   │   │   ├── product.schemas.d.ts.map
+│   │   │   │   │   ├── product.schemas.js
+│   │   │   │   │   ├── product.schemas.js.map
+│   │   │   │   │   ├── product.types.d.ts
+│   │   │   │   │   ├── product.types.d.ts.map
+│   │   │   │   │   ├── product.types.js
+│   │   │   │   │   └── product.types.js.map
+│   │   │   │   ├── rate-limit
+│   │   │   │   │   ├── irate-limit-store.d.ts
+│   │   │   │   │   ├── irate-limit-store.d.ts.map
+│   │   │   │   │   ├── irate-limit-store.js
+│   │   │   │   │   └── irate-limit-store.js.map
+│   │   │   │   ├── settings
+│   │   │   │   │   ├── setting.schemas.d.ts
+│   │   │   │   │   ├── setting.schemas.d.ts.map
+│   │   │   │   │   ├── setting.schemas.js
+│   │   │   │   │   ├── setting.schemas.js.map
+│   │   │   │   │   ├── setting.types.d.ts
+│   │   │   │   │   ├── setting.types.d.ts.map
+│   │   │   │   │   ├── setting.types.js
+│   │   │   │   │   └── setting.types.js.map
+│   │   │   │   ├── tokens.d.ts
+│   │   │   │   ├── tokens.d.ts.map
+│   │   │   │   ├── tokens.js
+│   │   │   │   └── tokens.js.map
+│   │   │   ├── infrastructure
+│   │   │   │   ├── admin-users
+│   │   │   │   │   ├── prisma-admin-user.repository.d.ts
+│   │   │   │   │   ├── prisma-admin-user.repository.d.ts.map
+│   │   │   │   │   ├── prisma-admin-user.repository.js
+│   │   │   │   │   └── prisma-admin-user.repository.js.map
+│   │   │   │   ├── auth
+│   │   │   │   │   ├── prisma-auth-session.repository.d.ts
+│   │   │   │   │   ├── prisma-auth-session.repository.d.ts.map
+│   │   │   │   │   ├── prisma-auth-session.repository.js
+│   │   │   │   │   └── prisma-auth-session.repository.js.map
+│   │   │   │   ├── customers
+│   │   │   │   │   ├── prisma-customer.repository.d.ts
+│   │   │   │   │   ├── prisma-customer.repository.d.ts.map
+│   │   │   │   │   ├── prisma-customer.repository.js
+│   │   │   │   │   └── prisma-customer.repository.js.map
+│   │   │   │   ├── dashboard
+│   │   │   │   │   ├── prisma-dashboard.repository.d.ts
+│   │   │   │   │   ├── prisma-dashboard.repository.d.ts.map
+│   │   │   │   │   ├── prisma-dashboard.repository.js
+│   │   │   │   │   └── prisma-dashboard.repository.js.map
+│   │   │   │   ├── database
+│   │   │   │   │   ├── generated
+│   │   │   │   │   │   └── prisma
+│   │   │   │   │   │       ├── browser.d.ts
+│   │   │   │   │   │       ├── browser.d.ts.map
+│   │   │   │   │   │       ├── browser.js
+│   │   │   │   │   │       ├── browser.js.map
+│   │   │   │   │   │       ├── client.d.ts
+│   │   │   │   │   │       ├── client.d.ts.map
+│   │   │   │   │   │       ├── client.js
+│   │   │   │   │   │       ├── client.js.map
+│   │   │   │   │   │       ├── commonInputTypes.d.ts
+│   │   │   │   │   │       ├── commonInputTypes.d.ts.map
+│   │   │   │   │   │       ├── commonInputTypes.js
+│   │   │   │   │   │       ├── commonInputTypes.js.map
+│   │   │   │   │   │       ├── enums.d.ts
+│   │   │   │   │   │       ├── enums.d.ts.map
+│   │   │   │   │   │       ├── enums.js
+│   │   │   │   │   │       ├── enums.js.map
+│   │   │   │   │   │       ├── internal
+│   │   │   │   │   │       │   ├── class.d.ts
+│   │   │   │   │   │       │   ├── class.d.ts.map
+│   │   │   │   │   │       │   ├── class.js
+│   │   │   │   │   │       │   ├── class.js.map
+│   │   │   │   │   │       │   ├── prismaNamespace.d.ts
+│   │   │   │   │   │       │   ├── prismaNamespace.d.ts.map
+│   │   │   │   │   │       │   ├── prismaNamespace.js
+│   │   │   │   │   │       │   ├── prismaNamespace.js.map
+│   │   │   │   │   │       │   ├── prismaNamespaceBrowser.d.ts
+│   │   │   │   │   │       │   ├── prismaNamespaceBrowser.d.ts.map
+│   │   │   │   │   │       │   ├── prismaNamespaceBrowser.js
+│   │   │   │   │   │       │   └── prismaNamespaceBrowser.js.map
+│   │   │   │   │   │       ├── models
+│   │   │   │   │   │       │   ├── Credential.d.ts
+│   │   │   │   │   │       │   ├── Credential.d.ts.map
+│   │   │   │   │   │       │   ├── Credential.js
+│   │   │   │   │   │       │   ├── Credential.js.map
+│   │   │   │   │   │       │   ├── Customer.d.ts
+│   │   │   │   │   │       │   ├── Customer.d.ts.map
+│   │   │   │   │   │       │   ├── Customer.js
+│   │   │   │   │   │       │   ├── Customer.js.map
+│   │   │   │   │   │       │   ├── Order.d.ts
+│   │   │   │   │   │       │   ├── Order.d.ts.map
+│   │   │   │   │   │       │   ├── Order.js
+│   │   │   │   │   │       │   ├── Order.js.map
+│   │   │   │   │   │       │   ├── OrderItem.d.ts
+│   │   │   │   │   │       │   ├── OrderItem.d.ts.map
+│   │   │   │   │   │       │   ├── OrderItem.js
+│   │   │   │   │   │       │   ├── OrderItem.js.map
+│   │   │   │   │   │       │   ├── Product.d.ts
+│   │   │   │   │   │       │   ├── Product.d.ts.map
+│   │   │   │   │   │       │   ├── Product.js
+│   │   │   │   │   │       │   ├── Product.js.map
+│   │   │   │   │   │       │   ├── RateLimitEntry.d.ts
+│   │   │   │   │   │       │   ├── RateLimitEntry.d.ts.map
+│   │   │   │   │   │       │   ├── RateLimitEntry.js
+│   │   │   │   │   │       │   ├── RateLimitEntry.js.map
+│   │   │   │   │   │       │   ├── Role.d.ts
+│   │   │   │   │   │       │   ├── Role.d.ts.map
+│   │   │   │   │   │       │   ├── Role.js
+│   │   │   │   │   │       │   ├── Role.js.map
+│   │   │   │   │   │       │   ├── Session.d.ts
+│   │   │   │   │   │       │   ├── Session.d.ts.map
+│   │   │   │   │   │       │   ├── Session.js
+│   │   │   │   │   │       │   ├── Session.js.map
+│   │   │   │   │   │       │   ├── Setting.d.ts
+│   │   │   │   │   │       │   ├── Setting.d.ts.map
+│   │   │   │   │   │       │   ├── Setting.js
+│   │   │   │   │   │       │   ├── Setting.js.map
+│   │   │   │   │   │       │   ├── User.d.ts
+│   │   │   │   │   │       │   ├── User.d.ts.map
+│   │   │   │   │   │       │   ├── User.js
+│   │   │   │   │   │       │   └── User.js.map
+│   │   │   │   │   │       ├── models.d.ts
+│   │   │   │   │   │       ├── models.d.ts.map
+│   │   │   │   │   │       ├── models.js
+│   │   │   │   │   │       └── models.js.map
+│   │   │   │   │   ├── prisma.service.d.ts
+│   │   │   │   │   ├── prisma.service.d.ts.map
+│   │   │   │   │   ├── prisma.service.js
+│   │   │   │   │   └── prisma.service.js.map
+│   │   │   │   ├── hash
+│   │   │   │   │   ├── argon2id-hash.provider.d.ts
+│   │   │   │   │   ├── argon2id-hash.provider.d.ts.map
+│   │   │   │   │   ├── argon2id-hash.provider.js
+│   │   │   │   │   └── argon2id-hash.provider.js.map
+│   │   │   │   ├── jwt
+│   │   │   │   │   ├── rs256-jwt.provider.d.ts
+│   │   │   │   │   ├── rs256-jwt.provider.d.ts.map
+│   │   │   │   │   ├── rs256-jwt.provider.js
+│   │   │   │   │   └── rs256-jwt.provider.js.map
+│   │   │   │   ├── orders
+│   │   │   │   │   ├── prisma-order.repository.d.ts
+│   │   │   │   │   ├── prisma-order.repository.d.ts.map
+│   │   │   │   │   ├── prisma-order.repository.js
+│   │   │   │   │   └── prisma-order.repository.js.map
+│   │   │   │   ├── products
+│   │   │   │   │   ├── prisma-product.repository.d.ts
+│   │   │   │   │   ├── prisma-product.repository.d.ts.map
+│   │   │   │   │   ├── prisma-product.repository.js
+│   │   │   │   │   └── prisma-product.repository.js.map
+│   │   │   │   ├── rate-limit
+│   │   │   │   │   ├── prisma-rate-limit.store.d.ts
+│   │   │   │   │   ├── prisma-rate-limit.store.d.ts.map
+│   │   │   │   │   ├── prisma-rate-limit.store.js
+│   │   │   │   │   └── prisma-rate-limit.store.js.map
+│   │   │   │   └── settings
+│   │   │   │       ├── prisma-setting.repository.d.ts
+│   │   │   │       ├── prisma-setting.repository.d.ts.map
+│   │   │   │       ├── prisma-setting.repository.js
+│   │   │   │       └── prisma-setting.repository.js.map
+│   │   │   ├── main.d.ts
+│   │   │   ├── main.d.ts.map
+│   │   │   ├── main.js
+│   │   │   ├── main.js.map
+│   │   │   └── presentation
+│   │   │       ├── admin-users
+│   │   │       │   ├── admin-users.controller.d.ts
+│   │   │       │   ├── admin-users.controller.d.ts.map
+│   │   │       │   ├── admin-users.controller.js
+│   │   │       │   └── admin-users.controller.js.map
+│   │   │       ├── auth
+│   │   │       │   ├── auth.controller.d.ts
+│   │   │       │   ├── auth.controller.d.ts.map
+│   │   │       │   ├── auth.controller.js
+│   │   │       │   └── auth.controller.js.map
+│   │   │       ├── customers
+│   │   │       │   ├── customers.controller.d.ts
+│   │   │       │   ├── customers.controller.d.ts.map
+│   │   │       │   ├── customers.controller.js
+│   │   │       │   └── customers.controller.js.map
+│   │   │       ├── dashboard
+│   │   │       │   ├── dashboard.controller.d.ts
+│   │   │       │   ├── dashboard.controller.d.ts.map
+│   │   │       │   ├── dashboard.controller.js
+│   │   │       │   └── dashboard.controller.js.map
+│   │   │       ├── decorators
+│   │   │       │   ├── public.decorator.d.ts
+│   │   │       │   ├── public.decorator.d.ts.map
+│   │   │       │   ├── public.decorator.js
+│   │   │       │   ├── public.decorator.js.map
+│   │   │       │   ├── roles.decorator.d.ts
+│   │   │       │   ├── roles.decorator.d.ts.map
+│   │   │       │   ├── roles.decorator.js
+│   │   │       │   └── roles.decorator.js.map
+│   │   │       ├── filters
+│   │   │       │   ├── global-exception.filter.d.ts
+│   │   │       │   ├── global-exception.filter.d.ts.map
+│   │   │       │   ├── global-exception.filter.js
+│   │   │       │   └── global-exception.filter.js.map
+│   │   │       ├── guards
+│   │   │       │   ├── jwt-auth.guard.d.ts
+│   │   │       │   ├── jwt-auth.guard.d.ts.map
+│   │   │       │   ├── jwt-auth.guard.js
+│   │   │       │   ├── jwt-auth.guard.js.map
+│   │   │       │   ├── role.guard.d.ts
+│   │   │       │   ├── role.guard.d.ts.map
+│   │   │       │   ├── role.guard.js
+│   │   │       │   └── role.guard.js.map
+│   │   │       ├── orders
+│   │   │       │   ├── orders.controller.d.ts
+│   │   │       │   ├── orders.controller.d.ts.map
+│   │   │       │   ├── orders.controller.js
+│   │   │       │   └── orders.controller.js.map
+│   │   │       ├── products
+│   │   │       │   ├── products.controller.d.ts
+│   │   │       │   ├── products.controller.d.ts.map
+│   │   │       │   ├── products.controller.js
+│   │   │       │   └── products.controller.js.map
+│   │   │       └── settings
+│   │   │           ├── settings.controller.d.ts
+│   │   │           ├── settings.controller.d.ts.map
+│   │   │           ├── settings.controller.js
+│   │   │           └── settings.controller.js.map
+│   │   ├── eslint.config.mjs
+│   │   ├── nest-cli.json
+│   │   ├── package.json
+│   │   ├── prisma
+│   │   │   ├── schema.prisma
+│   │   │   └── seed
+│   │   │       ├── seed-auth.ts
+│   │   │       └── seed-domain.ts
+│   │   ├── prisma.config.ts
+│   │   ├── src
+│   │   │   ├── app.controller.spec.ts
+│   │   │   ├── app.controller.ts
+│   │   │   ├── app.module.ts
+│   │   │   ├── app.service.ts
+│   │   │   ├── application
+│   │   │   │   ├── admin-users
+│   │   │   │   │   ├── create-managed-user.use-case.ts
+│   │   │   │   │   ├── create-managed-user.use-case.vitest.spec.ts
+│   │   │   │   │   ├── deactivate-managed-user.use-case.ts
+│   │   │   │   │   ├── deactivate-managed-user.use-case.vitest.spec.ts
+│   │   │   │   │   ├── list-managed-users.use-case.ts
+│   │   │   │   │   ├── update-managed-user.use-case.ts
+│   │   │   │   │   └── update-managed-user.use-case.vitest.spec.ts
+│   │   │   │   ├── auth
+│   │   │   │   │   ├── auth.helpers.ts
+│   │   │   │   │   ├── auth.schemas.ts
+│   │   │   │   │   ├── auth.use-case.dependencies.ts
+│   │   │   │   │   ├── get-current-user-profile.use-case.ts
+│   │   │   │   │   ├── get-current-user-profile.use-case.vitest.spec.ts
+│   │   │   │   │   ├── login.use-case.ts
+│   │   │   │   │   ├── login.use-case.vitest.spec.ts
+│   │   │   │   │   ├── logout-all.use-case.ts
+│   │   │   │   │   ├── logout.use-case.ts
+│   │   │   │   │   ├── logout.use-cases.vitest.spec.ts
+│   │   │   │   │   ├── refresh-session.use-case.ts
+│   │   │   │   │   └── refresh-session.use-case.vitest.spec.ts
+│   │   │   │   ├── common
+│   │   │   │   │   └── parse-duration.ts
+│   │   │   │   ├── customers
+│   │   │   │   │   ├── create-customer.use-case.ts
+│   │   │   │   │   ├── create-customer.use-case.vitest.spec.ts
+│   │   │   │   │   ├── delete-customer.use-case.ts
+│   │   │   │   │   ├── delete-customer.use-case.vitest.spec.ts
+│   │   │   │   │   ├── get-customer.use-case.ts
+│   │   │   │   │   ├── get-customer.use-case.vitest.spec.ts
+│   │   │   │   │   ├── list-customers.use-case.ts
+│   │   │   │   │   ├── list-customers.use-case.vitest.spec.ts
+│   │   │   │   │   ├── update-customer.use-case.ts
+│   │   │   │   │   └── update-customer.use-case.vitest.spec.ts
+│   │   │   │   ├── dashboard
+│   │   │   │   │   ├── get-dashboard-overview.use-case.ts
+│   │   │   │   │   └── get-dashboard-overview.use-case.vitest.spec.ts
+│   │   │   │   ├── orders
+│   │   │   │   │   ├── create-order.use-case.ts
+│   │   │   │   │   ├── create-order.use-case.vitest.spec.ts
+│   │   │   │   │   ├── delete-order.use-case.ts
+│   │   │   │   │   ├── delete-order.use-case.vitest.spec.ts
+│   │   │   │   │   ├── get-order.use-case.ts
+│   │   │   │   │   ├── get-order.use-case.vitest.spec.ts
+│   │   │   │   │   ├── list-orders.use-case.ts
+│   │   │   │   │   ├── list-orders.use-case.vitest.spec.ts
+│   │   │   │   │   ├── update-order.use-case.ts
+│   │   │   │   │   └── update-order.use-case.vitest.spec.ts
+│   │   │   │   ├── products
+│   │   │   │   │   ├── create-product.use-case.ts
+│   │   │   │   │   ├── create-product.use-case.vitest.spec.ts
+│   │   │   │   │   ├── delete-product.use-case.ts
+│   │   │   │   │   ├── delete-product.use-case.vitest.spec.ts
+│   │   │   │   │   ├── get-product.use-case.ts
+│   │   │   │   │   ├── get-product.use-case.vitest.spec.ts
+│   │   │   │   │   ├── list-products.use-case.ts
+│   │   │   │   │   ├── list-products.use-case.vitest.spec.ts
+│   │   │   │   │   ├── update-product.use-case.ts
+│   │   │   │   │   └── update-product.use-case.vitest.spec.ts
+│   │   │   │   └── settings
+│   │   │   │       ├── list-settings.use-case.ts
+│   │   │   │       ├── upsert-setting.use-case.ts
+│   │   │   │       └── upsert-setting.use-case.vitest.spec.ts
+│   │   │   ├── domain
+│   │   │   │   ├── admin-users
+│   │   │   │   │   ├── admin-user.schemas.ts
+│   │   │   │   │   └── admin-user.types.ts
+│   │   │   │   ├── auth
+│   │   │   │   │   ├── auth-session.repository.ts
+│   │   │   │   │   ├── auth-tokens.ts
+│   │   │   │   │   ├── auth.types.ts
+│   │   │   │   │   ├── ihash-provider.ts
+│   │   │   │   │   └── ijwt-provider.ts
+│   │   │   │   ├── customers
+│   │   │   │   │   ├── customer.schemas.ts
+│   │   │   │   │   └── customer.types.ts
+│   │   │   │   ├── dashboard
+│   │   │   │   │   └── dashboard.types.ts
+│   │   │   │   ├── exceptions
+│   │   │   │   │   ├── api-error.ts
+│   │   │   │   │   ├── app-exception.ts
+│   │   │   │   │   ├── conflict.exception.ts
+│   │   │   │   │   ├── forbidden.exception.ts
+│   │   │   │   │   ├── not-found.exception.ts
+│   │   │   │   │   ├── rate-limit.exception.ts
+│   │   │   │   │   └── unauthorized.exception.ts
+│   │   │   │   ├── orders
+│   │   │   │   │   ├── order.schemas.ts
+│   │   │   │   │   └── order.types.ts
+│   │   │   │   ├── products
+│   │   │   │   │   ├── product.schemas.ts
+│   │   │   │   │   └── product.types.ts
+│   │   │   │   ├── rate-limit
+│   │   │   │   │   └── irate-limit-store.ts
+│   │   │   │   ├── settings
+│   │   │   │   │   ├── setting.schemas.ts
+│   │   │   │   │   └── setting.types.ts
+│   │   │   │   └── tokens.ts
+│   │   │   ├── infrastructure
+│   │   │   │   ├── admin-users
+│   │   │   │   │   └── prisma-admin-user.repository.ts
+│   │   │   │   ├── auth
+│   │   │   │   │   └── prisma-auth-session.repository.ts
+│   │   │   │   ├── customers
+│   │   │   │   │   └── prisma-customer.repository.ts
+│   │   │   │   ├── dashboard
+│   │   │   │   │   └── prisma-dashboard.repository.ts
+│   │   │   │   ├── database
+│   │   │   │   │   ├── generated
+│   │   │   │   │   │   └── prisma
+│   │   │   │   │   │       ├── browser.ts
+│   │   │   │   │   │       ├── client.ts
+│   │   │   │   │   │       ├── commonInputTypes.ts
+│   │   │   │   │   │       ├── enums.ts
+│   │   │   │   │   │       ├── internal
+│   │   │   │   │   │       │   ├── class.ts
+│   │   │   │   │   │       │   ├── prismaNamespace.ts
+│   │   │   │   │   │       │   └── prismaNamespaceBrowser.ts
+│   │   │   │   │   │       ├── models
+│   │   │   │   │   │       │   ├── Credential.ts
+│   │   │   │   │   │       │   ├── Customer.ts
+│   │   │   │   │   │       │   ├── Order.ts
+│   │   │   │   │   │       │   ├── OrderItem.ts
+│   │   │   │   │   │       │   ├── Product.ts
+│   │   │   │   │   │       │   ├── RateLimitEntry.ts
+│   │   │   │   │   │       │   ├── Role.ts
+│   │   │   │   │   │       │   ├── Session.ts
+│   │   │   │   │   │       │   ├── Setting.ts
+│   │   │   │   │   │       │   └── User.ts
+│   │   │   │   │   │       └── models.ts
+│   │   │   │   │   └── prisma.service.ts
+│   │   │   │   ├── hash
+│   │   │   │   │   ├── argon2id-hash.provider.ts
+│   │   │   │   │   └── argon2id-hash.provider.vitest.spec.ts
+│   │   │   │   ├── jwt
+│   │   │   │   │   ├── rs256-jwt.provider.ts
+│   │   │   │   │   └── rs256-jwt.provider.vitest.spec.ts
+│   │   │   │   ├── orders
+│   │   │   │   │   └── prisma-order.repository.ts
+│   │   │   │   ├── products
+│   │   │   │   │   └── prisma-product.repository.ts
+│   │   │   │   ├── rate-limit
+│   │   │   │   │   ├── prisma-rate-limit.store.ts
+│   │   │   │   │   └── prisma-rate-limit.store.vitest.spec.ts
+│   │   │   │   └── settings
+│   │   │   │       └── prisma-setting.repository.ts
+│   │   │   ├── main.ts
+│   │   │   └── presentation
+│   │   │       ├── admin-users
+│   │   │       │   └── admin-users.controller.ts
+│   │   │       ├── auth
+│   │   │       │   └── auth.controller.ts
+│   │   │       ├── customers
+│   │   │       │   └── customers.controller.ts
+│   │   │       ├── dashboard
+│   │   │       │   └── dashboard.controller.ts
+│   │   │       ├── decorators
+│   │   │       │   ├── public.decorator.ts
+│   │   │       │   └── roles.decorator.ts
+│   │   │       ├── filters
+│   │   │       │   ├── global-exception.filter.ts
+│   │   │       │   └── global-exception.filter.vitest.spec.ts
+│   │   │       ├── guards
+│   │   │       │   ├── jwt-auth.guard.ts
+│   │   │       │   ├── jwt-auth.guard.vitest.spec.ts
+│   │   │       │   ├── role.guard.ts
+│   │   │       │   └── role.guard.vitest.spec.ts
+│   │   │       ├── http
+│   │   │       │   ├── correlation-id.middleware.ts
+│   │   │       │   └── correlation-id.middleware.vitest.spec.ts
+│   │   │       ├── orders
+│   │   │       │   └── orders.controller.ts
+│   │   │       ├── products
+│   │   │       │   └── products.controller.ts
+│   │   │       └── settings
+│   │   │           └── settings.controller.ts
+│   │   ├── tsconfig.build.json
+│   │   ├── tsconfig.json
+│   │   ├── tsconfig.tsbuildinfo
+│   │   └── vitest.config.ts
+│   └── web
+│       ├── app
+│       │   ├── api
+│       │   │   └── auth
+│       │   │       ├── login
+│       │   │       │   └── route.ts
+│       │   │       ├── logout
+│       │   │       │   └── route.ts
+│       │   │       └── refresh
+│       │   │           └── route.ts
+│       │   ├── dashboard
+│       │   │   └── page.tsx
+│       │   ├── layout.tsx
+│       │   ├── login
+│       │   │   └── page.tsx
+│       │   └── page.tsx
+│       ├── components
+│       │   └── auth
+│       │       ├── login-form.tsx
+│       │       └── logout-button.tsx
+│       ├── components.json
+│       ├── eslint.config.mjs
+│       ├── next-env.d.ts
+│       ├── next.config.mjs
+│       ├── package.json
+│       ├── postcss.config.mjs
+│       ├── proxy.ts
+│       ├── src
+│       │   └── services
+│       │       └── auth
+│       │           ├── api.ts
+│       │           ├── constants.ts
+│       │           ├── jwt.ts
+│       │           ├── request-auth.ts
+│       │           ├── session.ts
+│       │           └── types.ts
+│       └── tsconfig.json
+├── docker-compose.yml
+├── estrutura.txt
+├── package.json
+├── packages
+│   ├── config
+│   │   ├── dist
+│   │   │   ├── env.d.ts
+│   │   │   ├── env.d.ts.map
+│   │   │   ├── env.js
+│   │   │   ├── index.d.ts
+│   │   │   ├── index.d.ts.map
+│   │   │   └── index.js
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── env.ts
+│   │   │   └── index.ts
+│   │   └── tsconfig.json
+│   ├── eslint-config
+│   │   ├── README.md
+│   │   ├── base.js
+│   │   ├── next.js
+│   │   ├── package.json
+│   │   └── react-internal.js
+│   ├── tailwind-config
+│   │   ├── globals.css
+│   │   ├── package.json
+│   │   └── postcss.config.mjs
+│   ├── typescript-config
+│   │   ├── base.json
+│   │   ├── nextjs.json
+│   │   ├── package.json
+│   │   └── react-library.json
+│   └── ui
+│       ├── components.json
+│       ├── eslint.config.mjs
+│       ├── package.json
+│       ├── src
+│       │   ├── components
+│       │   │   ├── button.tsx
+│       │   │   ├── card.tsx
+│       │   │   ├── input.tsx
+│       │   │   ├── label.tsx
+│       │   │   └── mode-toggle.tsx
+│       │   ├── lib
+│       │   │   └── utils.ts
+│       │   └── theme-provider.tsx
+│       └── tsconfig.json
+├── pnpm-lock.yaml
+├── pnpm-workspace.yaml
+├── secrets
+│   ├── private.pem
+│   └── public.pem
+└── turbo.json
+
+126 directories, 614 files

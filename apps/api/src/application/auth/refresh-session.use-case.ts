@@ -36,6 +36,7 @@ export class RefreshSessionUseCase {
       jwtAudience: this.configService.get("JWT_AUDIENCE", { infer: true }),
       accessTokenExpiresIn: this.configService.get("JWT_ACCESS_TOKEN_EXPIRES_IN", { infer: true }),
       refreshTokenExpiresIn: this.configService.get("JWT_REFRESH_TOKEN_EXPIRES_IN", { infer: true }),
+      authCheckIpOnRefresh: this.configService.get("AUTH_CHECK_IP_ON_REFRESH", { infer: true }),
     };
   }
 
@@ -71,6 +72,25 @@ export class RefreshSessionUseCase {
 
     if (currentSession.expiresAt.getTime() <= Date.now()) {
       throw new UnauthorizedException("REFRESH_TOKEN_INVALID", "Refresh token expired");
+    }
+
+    if (this.deps.authCheckIpOnRefresh) {
+      const ipChanged =
+        currentSession.ipAddress !== null &&
+        input.ipAddress !== null &&
+        currentSession.ipAddress !== input.ipAddress;
+
+      const userAgentChanged =
+        currentSession.userAgent !== null &&
+        input.userAgent !== null &&
+        currentSession.userAgent !== input.userAgent;
+
+      if (ipChanged || userAgentChanged) {
+        throw new UnauthorizedException(
+          "SESSION_CONTEXT_MISMATCH",
+          "Session context changed. Please log in again.",
+        );
+      }
     }
 
     if (!currentSession.user.isActive) {

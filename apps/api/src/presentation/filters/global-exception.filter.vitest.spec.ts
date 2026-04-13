@@ -1,4 +1,4 @@
-import { ArgumentsHost, HttpException, HttpStatus } from "@nestjs/common";
+import { ArgumentsHost, HttpException, HttpStatus, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { ApiEnv } from "@repo/config";
 import { AppException } from "../../domain/exceptions/app-exception";
@@ -15,12 +15,12 @@ type MockResponse = {
   json: ReturnType<typeof vi.fn>;
 };
 
-function createHost(path = "/test/path") {
+function createHost(path = "/test/path", correlationId?: string) {
   const response: MockResponse = {
     status: vi.fn().mockReturnThis(),
     json: vi.fn(),
   };
-  const request = { url: path };
+  const request = { url: path, correlationId };
 
   const host = {
     switchToHttp: () => ({
@@ -47,6 +47,36 @@ function createFilter() {
 }
 
 describe("GlobalExceptionFilter", () => {
+  it("logs the provided correlationId", () => {
+    const loggerErrorSpy = vi.spyOn(Logger.prototype, "error").mockImplementation(() => {});
+    const filter = createFilter();
+    const { host } = createHost("/with-correlation", "meu-id-de-teste-123");
+
+    filter.catch(new Error("boom"), host);
+
+    expect(loggerErrorSpy).toHaveBeenCalledWith(
+      expect.stringContaining('"correlationId":"meu-id-de-teste-123"'),
+      expect.any(String),
+    );
+
+    loggerErrorSpy.mockRestore();
+  });
+
+  it("logs unknown correlationId when middleware did not attach one", () => {
+    const loggerErrorSpy = vi.spyOn(Logger.prototype, "error").mockImplementation(() => {});
+    const filter = createFilter();
+    const { host } = createHost("/without-correlation");
+
+    filter.catch(new Error("boom"), host);
+
+    expect(loggerErrorSpy).toHaveBeenCalledWith(
+      expect.stringContaining('"correlationId":"unknown"'),
+      expect.any(String),
+    );
+
+    loggerErrorSpy.mockRestore();
+  });
+
   it("maps app exceptions to expected HTTP status codes", () => {
     const cases: ReadonlyArray<{ exception: AppException; statusCode: number; code: string }> = [
       { exception: new UnauthorizedException("TOKEN_INVALID", "Token invalid"), statusCode: 401, code: "TOKEN_INVALID" },

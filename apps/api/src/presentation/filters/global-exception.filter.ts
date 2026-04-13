@@ -50,18 +50,32 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const response = httpContext.getResponse<{
       status(code: number): { json(payload: ApiError): void };
     }>();
-    const request = httpContext.getRequest<{ url: string }>();
+    const request = httpContext.getRequest<{ url: string; correlationId?: string }>();
     const path = request.url;
+    const correlationId = request.correlationId ?? "unknown";
     const nodeEnv = this.configService.get("NODE_ENV", { infer: true });
 
     const appError = this.normalizeException(exception, path);
     const stack = exception instanceof Error ? exception.stack : undefined;
     const logPayload =
       nodeEnv === "production"
-        ? `${appError.code} ${appError.message} path=${path}`
-        : `${appError.code} ${appError.message} path=${path} payload=${JSON.stringify(appError)}`;
+        ? {
+            correlationId,
+            path,
+            statusCode: appError.statusCode,
+            code: appError.code,
+            message: appError.message,
+          }
+        : {
+            correlationId,
+            path,
+            statusCode: appError.statusCode,
+            code: appError.code,
+            message: appError.message,
+            payload: appError,
+          };
 
-    this.logger.error(logPayload, stack);
+    this.logger.error(JSON.stringify(logPayload), stack);
     response.status(appError.statusCode).json(appError);
   }
 

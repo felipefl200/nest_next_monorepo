@@ -27,6 +27,7 @@ export const apiEnvSchema = z.object({
   JWT_AUDIENCE: z.string().min(1, "JWT_AUDIENCE is required"),
   JWT_ACCESS_TOKEN_EXPIRES_IN: z.string().min(1, "JWT_ACCESS_TOKEN_EXPIRES_IN is required"),
   JWT_REFRESH_TOKEN_EXPIRES_IN: z.string().min(1, "JWT_REFRESH_TOKEN_EXPIRES_IN is required"),
+  AUTH_CHECK_IP_ON_REFRESH: z.coerce.boolean().default(false),
   PORT: z.coerce.number().int().positive().default(3333),
   API_URL: z.url("API_URL must be a valid URL"),
   APP_CORS_ORIGIN: z.url("APP_CORS_ORIGIN must be a valid URL"),

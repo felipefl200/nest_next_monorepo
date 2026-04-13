@@ -12,4 +12,5 @@ export type AuthUseCaseDependencies = {
   jwtAudience: string;
   accessTokenExpiresIn: string;
   refreshTokenExpiresIn: string;
+  authCheckIpOnRefresh: boolean;
 };

@@ -15,18 +15,23 @@ import type { AccessTokenPayload } from "../../domain/auth/auth.types";
 
 type ConfigReader = Pick<ConfigService<ApiEnv, true>, "get">;
 
-function createConfigReader(): ConfigReader {
+function createConfigReader(
+  overrides: Partial<Pick<ApiEnv, "AUTH_CHECK_IP_ON_REFRESH">> = {},
+): ConfigReader {
   const env: Pick<
     ApiEnv,
     | "JWT_ISSUER"
     | "JWT_AUDIENCE"
     | "JWT_ACCESS_TOKEN_EXPIRES_IN"
     | "JWT_REFRESH_TOKEN_EXPIRES_IN"
+    | "AUTH_CHECK_IP_ON_REFRESH"
   > = {
     JWT_ISSUER: "issuer-test",
     JWT_AUDIENCE: "audience-test",
     JWT_ACCESS_TOKEN_EXPIRES_IN: "15m",
     JWT_REFRESH_TOKEN_EXPIRES_IN: "7d",
+    AUTH_CHECK_IP_ON_REFRESH: false,
+    ...overrides,
   };
 
   return {
@@ -176,5 +181,112 @@ describe("RefreshSessionUseCase", () => {
 
     expect(authSessionRepository.revokeAllSessionsByUserId).toHaveBeenCalledWith("user-1");
     expect(authSessionRepository.incrementUserTokenVersion).toHaveBeenCalledWith("user-1");
+  });
+
+  it("blocks refresh when IP changes and AUTH_CHECK_IP_ON_REFRESH is enabled", async () => {
+    const jwtProvider: IJwtProvider = {
+      sign: vi.fn(),
+      verify: vi.fn(async () => createVerifiedPayload()),
+      decode: vi.fn(),
+    };
+
+    const hashProvider: IHashProvider = {
+      hash: vi.fn(async () => "hash"),
+      compare: vi.fn(async () => true),
+    };
+
+    const rateLimitStore: IRateLimitStore = {
+      increment: vi.fn(async () => 1),
+      reset: vi.fn(async () => undefined),
+    };
+
+    const authSessionRepository: IAuthSessionRepository = {
+      findUserByEmail: vi.fn(),
+      findCurrentUserById: vi.fn(async () => null),
+      findSessionById: vi.fn(async () => createActiveSession()),
+      createSession: vi.fn(),
+      revokeSessionById: vi.fn(async () => undefined),
+      revokeAllSessionsByUserId: vi.fn(async () => undefined),
+      incrementUserTokenVersion: vi.fn(async () => undefined),
+    };
+
+    const useCase = new RefreshSessionUseCase(
+      jwtProvider,
+      hashProvider,
+      rateLimitStore,
+      authSessionRepository,
+      createConfigReader({ AUTH_CHECK_IP_ON_REFRESH: true }),
+    );
+
+    await expect(
+      useCase.execute({
+        refreshToken: "refresh-token-1",
+        ipAddress: "127.0.0.2",
+        userAgent: "Vitest",
+      }),
+    ).rejects.toMatchObject({
+      code: "SESSION_CONTEXT_MISMATCH",
+    } satisfies Partial<UnauthorizedException>);
+
+    expect(authSessionRepository.revokeSessionById).not.toHaveBeenCalled();
+    expect(authSessionRepository.createSession).not.toHaveBeenCalled();
+  });
+
+  it("allows refresh when IP matches and AUTH_CHECK_IP_ON_REFRESH is enabled", async () => {
+    const jwtProvider: IJwtProvider = {
+      sign: vi.fn(async (_payload, expiresIn) => `token-${expiresIn ?? "default"}`),
+      verify: vi.fn(async () => createVerifiedPayload()),
+      decode: vi.fn(),
+    };
+
+    const hashProvider: IHashProvider = {
+      hash: vi.fn(async () => "new-refresh-hash"),
+      compare: vi.fn(async () => true),
+    };
+
+    const rateLimitStore: IRateLimitStore = {
+      increment: vi.fn(async () => 1),
+      reset: vi.fn(async () => undefined),
+    };
+
+    const authSessionRepository: IAuthSessionRepository = {
+      findUserByEmail: vi.fn(),
+      findCurrentUserById: vi.fn(async () => null),
+      findSessionById: vi.fn(async () => createActiveSession()),
+      createSession: vi.fn(
+        async (input): Promise<AuthSession> => ({
+          id: input.id,
+          userId: input.userId,
+          refreshTokenHash: input.refreshTokenHash,
+          userAgent: input.userAgent,
+          ipAddress: input.ipAddress,
+          expiresAt: input.expiresAt,
+          revokedAt: null,
+          lastUsedAt: null,
+        }),
+      ),
+      revokeSessionById: vi.fn(async () => undefined),
+      revokeAllSessionsByUserId: vi.fn(async () => undefined),
+      incrementUserTokenVersion: vi.fn(async () => undefined),
+    };
+
+    const useCase = new RefreshSessionUseCase(
+      jwtProvider,
+      hashProvider,
+      rateLimitStore,
+      authSessionRepository,
+      createConfigReader({ AUTH_CHECK_IP_ON_REFRESH: true }),
+    );
+
+    const result = await useCase.execute({
+      refreshToken: "refresh-token-1",
+      ipAddress: "127.0.0.1",
+      userAgent: "Vitest",
+    });
+
+    expect(result.accessToken).toBe("token-15m");
+    expect(result.refreshToken).toBe("token-7d");
+    expect(authSessionRepository.revokeSessionById).toHaveBeenCalledWith("session-1");
+    expect(authSessionRepository.createSession).toHaveBeenCalledTimes(1);
   });
 });

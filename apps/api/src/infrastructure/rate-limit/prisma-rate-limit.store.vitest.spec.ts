@@ -13,79 +13,38 @@ type Entry = {
 
 function createPrismaMock() {
   const storage = new Map<string, Entry>();
+  const queryRaw: PrismaRateLimitClient["$queryRaw"] = async <T>(
+    _query: TemplateStringsArray,
+    ...values: unknown[]
+  ): Promise<T> => {
+    const [key, expiresAt, now] = values as [string, Date, Date];
+    const existing = storage.get(key);
+
+    if (existing === undefined || existing.expiresAt.getTime() <= now.getTime()) {
+      const created: Entry = {
+        key,
+        count: 1,
+        expiresAt,
+        updatedAt: now,
+      };
+      storage.set(key, created);
+      return [{ count: created.count }] as T;
+    }
+
+    const updated: Entry = {
+      ...existing,
+      count: existing.count + 1,
+      updatedAt: now,
+    };
+    storage.set(key, updated);
+    return [{ count: updated.count }] as T;
+  };
 
   const prisma: PrismaRateLimitClient = {
     rateLimitEntry: {
       findUnique: vi.fn(async ({ where }: { where: { key: string } }) => {
         return storage.get(where.key) ?? null;
       }),
-      upsert: vi.fn(
-        async ({
-          where,
-          create,
-          update,
-        }: {
-          where: { key: string };
-          create: { key: string; count: number; expiresAt: Date };
-          update: {
-            count?: number | { increment: number };
-            expiresAt?: Date;
-            updatedAt?: Date;
-          };
-        }) => {
-          const existing = storage.get(where.key);
-          const now = update.updatedAt ?? new Date();
-
-          if (existing === undefined) {
-            const created: Entry = {
-              key: create.key,
-              count: create.count,
-              expiresAt: create.expiresAt,
-              updatedAt: now,
-            };
-            storage.set(where.key, created);
-            return created;
-          }
-
-          const updated: Entry = {
-            ...existing,
-            count:
-              typeof update.count === "number" ? update.count : existing.count,
-            expiresAt: update.expiresAt ?? existing.expiresAt,
-            updatedAt: now,
-          };
-          storage.set(where.key, updated);
-          return updated;
-        },
-      ),
-      update: vi.fn(
-        async ({
-          where,
-          data,
-        }: {
-          where: { key: string };
-          data: { count?: number | { increment: number }; updatedAt?: Date };
-        }) => {
-          const existing = storage.get(where.key);
-
-          if (existing === undefined) {
-            throw new Error("Entry not found");
-          }
-
-          const increment =
-            typeof data.count === "object" && data.count !== null
-              ? data.count.increment
-              : 0;
-
-          const updated: Entry = {
-            ...existing,
-            count: existing.count + increment,
-            updatedAt: data.updatedAt ?? new Date(),
-          };
-          storage.set(where.key, updated);
-          return updated;
-        },
-      ),
       delete: vi.fn(async ({ where }: { where: { key: string } }) => {
         const existing = storage.get(where.key);
 
@@ -97,6 +56,7 @@ function createPrismaMock() {
         return existing;
       }),
     },
+    $queryRaw: vi.fn(queryRaw) as PrismaRateLimitClient["$queryRaw"],
   };
 
   return { prisma, storage };
@@ -128,6 +88,19 @@ describe("PrismaRateLimitStore", () => {
 
     const count = await store.increment(key, 60);
     expect(count).toBe(1);
+  });
+
+  it("counts concurrent increments correctly", async () => {
+    const { prisma } = createPrismaMock();
+    const store = new PrismaRateLimitStore(prisma);
+    const key = "ip:127.0.0.1";
+    const attempts = 10;
+
+    const results = await Promise.all(
+      Array.from({ length: attempts }, () => store.increment(key, 60)),
+    );
+
+    expect(Math.max(...results)).toBe(attempts);
   });
 
   it("resets existing keys and ignores missing keys", async () => {
