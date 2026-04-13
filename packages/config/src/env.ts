@@ -29,6 +29,7 @@ export const apiEnvSchema = z.object({
   JWT_REFRESH_TOKEN_EXPIRES_IN: z.string().min(1, "JWT_REFRESH_TOKEN_EXPIRES_IN is required"),
   PORT: z.coerce.number().int().positive().default(3333),
   API_URL: z.url("API_URL must be a valid URL"),
+  APP_CORS_ORIGIN: z.url("APP_CORS_ORIGIN must be a valid URL"),
   ADMIN_SEED_PASSWORD: z.string().min(8, "ADMIN_SEED_PASSWORD must have at least 8 characters"),
 });
 

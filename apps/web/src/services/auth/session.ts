@@ -55,7 +55,7 @@ export function persistAuthCookies(
   cookieStore.set(AUTH_COOKIE_NAMES.accessToken, auth.accessToken, {
     httpOnly: true,
     secure: isSecureCookie(),
-    sameSite: "lax",
+    sameSite: "strict",
     path: "/",
     expires: accessTokenExpiresAt ?? undefined,
   });

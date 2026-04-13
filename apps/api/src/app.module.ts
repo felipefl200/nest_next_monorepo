@@ -59,61 +59,6 @@ import { AdminUsersController } from './presentation/admin-users/admin-users.con
 import { JwtAuthGuard } from './presentation/guards/jwt-auth.guard';
 import { RoleGuard } from './presentation/guards/role.guard';
 
-const DEV_FALLBACK_PRIVATE_KEY =
-  "-----BEGIN PRIVATE KEY-----\n" +
-  "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDWi8SEO8G8iiX5\n" +
-  "WaOerYBYMOiERix8ofGR5UmP30kMUdXpZkYeBuY8ihNXd9F9g1phIsuVbzH/qJ+z\n" +
-  "s1FUI4FLS5GlqRJUOBTxC+Gamz054RLcwTWYHmTOImVW7xY6f6JeHmY7K8erdqyS\n" +
-  "Jt3eHFQm7m/P5o6L0QHewI+2ComDl+oym7YpdBgyrh35aud7x0QP4FBbjQaDl9LL\n" +
-  "QNLHdgjZBLS5qfND/z607MxUevkU8LkN2d+AHN5Del6Ws7eS3+3qUNRuxKDkDPGQ\n" +
-  "LPIWuvlJ4XQI2Q8dy4ElIjpOoiSiym1sGpA7KLSRfBShjLXe8+nrk8JKeosyC/KQ\n" +
-  "hA0UkZc9AgMBAAECggEAAhnesVXSz77ItgesSI7yXPVnNmrZn4OdfLUymZZYZTT2\n" +
-  "g8waMS951XYbs4yO0GU3DXROQF4G/RJu+4DXeOopivUIIxXgev3T8R5DXPoMfmuj\n" +
-  "4QKCYFOTpmzOaxc5XkEDV80eIjyZmvR1GFqJlk66b7CcePxF5NHpQXjHdNh1Sz29\n" +
-  "G+EHDfG7SFvxHN6RH3TrxPomeIlluiDrDCc+5p8526CJvwD4iyHBriXCa5M6QTVo\n" +
-  "t6zHpFXbKMG8cTRkFdZuGUTeb1CupKzVFF9iQ2+kWoHDMEwfOzKjbIsGT+U/EYG7\n" +
-  "r4kd5S7IyKaCY4j6XJiZy/i3a5E3BiRfyxYTjvEr6QKBgQDwlP2xPG2lADs/ujdw\n" +
-  "Ef4zj5bcWYeWS9ZaYhozmjYDAX1zYp97pU/n17kz0zMAXNRl3c+kop+93KNo/BCY\n" +
-  "0WgxKqx7iWxzy28VOc7CXODxSIT8DXUfglZPSfZV2zwDxSbJn0VM5Hv1woDq88YU\n" +
-  "n2sytu4HrrNwjkXcEawNdh/OlQKBgQDkS6CYGYeYShpwobIcvMRgSJCsS+jyUXKI\n" +
-  "oupCYV/f1IMElWOp03XgZz9QODS6LTym9lCjTV+5CX1G+divtf5zCycspaezpsI7\n" +
-  "5ZyciRUo4uaW9aYjRFVhVqecxhkJwIA1D4NJ46Cl/ldjDgNjfiZyZKEB/l4nDQGq\n" +
-  "+GAOjBUECQKBgQDpCck79ybWH4VE06KDokozs7EUPH0D7u3xmvl6ZrRO8RCNxkhp\n" +
-  "wtXF48Z4FupePY1YJyXNeeF2TdTUCuYgwSdGCOoOuC0fdT1iuB45UzJpRi/a30ZG\n" +
-  "gUANib1dqQFXPY+22dqNAv24LvIlpICI1WtHMr8bHfSe4JF2/H9GgteIiQKBgH4D\n" +
-  "nMa4ONd/9+454sXoEIGRLIJeeFvhR1ZSjvpLI4+6jwNlrpicR5GxjAosrDYkKDmE\n" +
-  "9ufdGrxZl5Qo70m2LJi2DE6htdr9bnN/f54MMOjbriqft6/51SMgoO5xjnqKjno7\n" +
-  "cN3FTvSxWu0rXAV8KZ61GwatsKzfig8kgGknO6Z5AoGBAJ/cfAH1+JmqdQpGzwAG\n" +
-  "QUs/9FZArF0LSbaYZfgXQjYjR6kN25f+ubL+qYFJTnc8Dl9QNxMbcDJbdfRaW3lT\n" +
-  "QGLB5rBIrsJDpbjeudBip/5R3rjuSV0gOa+f6Ud2ZI49EyL1nA7HhhjwEiu5+v2c\n" +
-  "hxkvmosdnTwKW/h/BKs7SxG+\n" +
-  "-----END PRIVATE KEY-----";
-
-const DEV_FALLBACK_PUBLIC_KEY =
-  "-----BEGIN PUBLIC KEY-----\n" +
-  "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1ovEhDvBvIol+Vmjnq2A\n" +
-  "WDDohEYsfKHxkeVJj99JDFHV6WZGHgbmPIoTV3fRfYNaYSLLlW8x/6ifs7NRVCOB\n" +
-  "S0uRpakSVDgU8Qvhmps9OeES3ME1mB5kziJlVu8WOn+iXh5mOyvHq3askibd3hxU\n" +
-  "Ju5vz+aOi9EB3sCPtgqJg5fqMpu2KXQYMq4d+Wrne8dED+BQW40Gg5fSy0DSx3YI\n" +
-  "2QS0uanzQ/8+tOzMVHr5FPC5DdnfgBzeQ3pelrO3kt/t6lDUbsSg5AzxkCzyFrr5\n" +
-  "SeF0CNkPHcuBJSI6TqIkosptbBqQOyi0kXwUoYy13vPp65PCSnqLMgvykIQNFJGX\n" +
-  "PQIDAQAB\n" +
-  "-----END PUBLIC KEY-----";
-
-function resolveJwtKeys(privateKey: string, publicKey: string): { privateKey: string; publicKey: string } {
-  const isPlaceholder =
-    privateKey.includes("YOUR_PRIVATE_KEY") || publicKey.includes("YOUR_PUBLIC_KEY");
-
-  if (isPlaceholder && process.env.NODE_ENV !== "production") {
-    return {
-      privateKey: DEV_FALLBACK_PRIVATE_KEY,
-      publicKey: DEV_FALLBACK_PUBLIC_KEY,
-    };
-  }
-
-  return { privateKey, publicKey };
-}
-
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -158,17 +103,12 @@ function resolveJwtKeys(privateKey: string, publicKey: string): { privateKey: st
       provide: JWT_PROVIDER,
       inject: [ConfigService],
       useFactory: (configService: ConfigService<ApiEnv, true>) => {
-        const keys = resolveJwtKeys(
-          configService.get('JWT_PRIVATE_KEY', { infer: true }),
-          configService.get('JWT_PUBLIC_KEY', { infer: true }),
-        );
-
         return new Rs256JwtProvider({
-          privateKey: keys.privateKey,
-          publicKey: keys.publicKey,
-          issuer: configService.get('JWT_ISSUER', { infer: true }),
-          audience: configService.get('JWT_AUDIENCE', { infer: true }),
-          accessTokenExpiresIn: configService.get('JWT_ACCESS_TOKEN_EXPIRES_IN', { infer: true }),
+          privateKey: configService.getOrThrow('JWT_PRIVATE_KEY'),
+          publicKey: configService.getOrThrow('JWT_PUBLIC_KEY'),
+          issuer: configService.getOrThrow('JWT_ISSUER'),
+          audience: configService.getOrThrow('JWT_AUDIENCE'),
+          accessTokenExpiresIn: configService.getOrThrow('JWT_ACCESS_TOKEN_EXPIRES_IN'),
         });
       },
     },

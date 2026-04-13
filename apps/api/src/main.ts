@@ -1,3 +1,4 @@
+import helmet from "helmet";
 import { loadEnv } from "@repo/config";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
@@ -9,7 +10,33 @@ loadEnv();
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get<ConfigService<ApiEnv, true>>(ConfigService);
-  const port = configService.get("PORT", { infer: true });
+  const port = configService.getOrThrow("PORT");
+  const corsOrigin = configService.getOrThrow("APP_CORS_ORIGIN");
+
+  app.enableCors({
+    origin: corsOrigin,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "x-request-id"],
+  });
+
+  app.use(
+    helmet({
+      hsts: {
+        maxAge: 31536000,
+        includeSubDomains: true,
+        preload: true,
+      },
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'"],
+          styleSrc: ["'self'", "'unsafe-inline'"],
+          imgSrc: ["'self'", "data:"],
+        },
+      },
+    }),
+  );
 
   await app.listen(port);
 }
