@@ -3,6 +3,11 @@ import { DeleteOrderUseCase } from "./delete-order.use-case";
 import { NotFoundException } from "../../domain/exceptions/not-found.exception";
 import type { IOrderRepository, OrderEntity } from "../../domain/orders/order.types";
 
+const ACTOR = {
+  actorUserId: "user-1",
+  actorRole: "MANAGER" as const,
+};
+
 function createMockRepository(): IOrderRepository {
   const mockOrder: OrderEntity = {
     id: "order-1",
@@ -11,6 +16,7 @@ function createMockRepository(): IOrderRepository {
     customerName: "Test Customer",
     status: "PENDING",
     total: "150.00",
+    ownerUserId: ACTOR.actorUserId,
     items: [],
     createdAt: "2026-04-06T10:00:00.000Z",
     updatedAt: "2026-04-06T10:00:00.000Z",
@@ -19,6 +25,7 @@ function createMockRepository(): IOrderRepository {
   return {
     create: vi.fn(async () => mockOrder),
     findById: vi.fn(async (id: string) => (id === "order-1" ? mockOrder : null)),
+    findOwnedById: vi.fn(async (id: string) => (id === "order-1" ? mockOrder : null)),
     findByNumber: vi.fn(async () => null),
     list: vi.fn(async () => ({
       data: [],
@@ -42,9 +49,9 @@ describe("DeleteOrderUseCase", () => {
 
   it("deletes order successfully", async () => {
     const useCase = new DeleteOrderUseCase(mockRepo);
-    await useCase.execute("order-1");
+    await useCase.execute("order-1", ACTOR);
 
-    expect(mockRepo.findById).toHaveBeenCalledWith("order-1");
+    expect(mockRepo.findOwnedById).toHaveBeenCalledWith("order-1", ACTOR.actorUserId);
     expect(mockRepo.delete).toHaveBeenCalledWith("order-1");
     expect(mockRepo.delete).toHaveBeenCalledTimes(1);
   });
@@ -52,10 +59,10 @@ describe("DeleteOrderUseCase", () => {
   it("throws NotFoundException when order not found", async () => {
     const useCase = new DeleteOrderUseCase(mockRepo);
 
-    await expect(useCase.execute("non-existent-id")).rejects.toThrow(
+    await expect(useCase.execute("non-existent-id", ACTOR)).rejects.toThrow(
       NotFoundException,
     );
-    await expect(useCase.execute("non-existent-id")).rejects.toThrow(
+    await expect(useCase.execute("non-existent-id", ACTOR)).rejects.toThrow(
       "Order not found",
     );
     expect(mockRepo.delete).not.toHaveBeenCalled();

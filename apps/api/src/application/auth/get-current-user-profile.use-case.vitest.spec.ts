@@ -12,6 +12,7 @@ function createRepository(
 ): IAuthSessionRepository {
   return {
     findUserByEmail: vi.fn(async (): Promise<AuthUser | null> => null),
+    findUserById: vi.fn(async (): Promise<AuthUser | null> => null),
     findCurrentUserById: vi.fn(async () => ({
       id: "user-1",
       email: "admin@example.com",
@@ -21,11 +22,16 @@ function createRepository(
       role: "ADMIN" as const,
     })),
     findSessionById: vi.fn(async (): Promise<AuthSessionWithUser | null> => null),
+    updateCurrentUserProfile: vi.fn(async () => {
+      throw new Error("not implemented");
+    }),
+    updateCurrentUserPassword: vi.fn(async () => undefined),
     createSession: vi.fn(async (): Promise<AuthSession> => {
       throw new Error("not implemented");
     }),
     revokeSessionById: vi.fn(async () => undefined),
     revokeAllSessionsByUserId: vi.fn(async () => undefined),
+    revokeOtherSessionsByUserId: vi.fn(async () => undefined),
     incrementUserTokenVersion: vi.fn(async () => undefined),
     ...overrides,
   };

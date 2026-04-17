@@ -9,6 +9,11 @@ import type {
 } from "../../domain/orders/order.types";
 import type { IProductRepository, ProductEntity } from "../../domain/products/product.types";
 
+const ACTOR = {
+  actorUserId: "user-1",
+  actorRole: "MANAGER" as const,
+};
+
 function createMockRepository(): IOrderRepository {
   const mockOrder: OrderEntity = {
     id: "order-1",
@@ -17,6 +22,7 @@ function createMockRepository(): IOrderRepository {
     customerName: "Test Customer",
     status: "PENDING",
     total: "150.00",
+    ownerUserId: ACTOR.actorUserId,
     items: [
       {
         productId: "product-1",
@@ -38,6 +44,7 @@ function createMockRepository(): IOrderRepository {
   return {
     create: vi.fn(async () => mockOrder),
     findById: vi.fn(async () => null),
+    findOwnedById: vi.fn(async () => null),
     findByNumber: vi.fn(async () => null),
     list: vi.fn(async () => ({
       data: [],
@@ -63,9 +70,11 @@ function createMockCustomerRepository(): ICustomerRepository {
       email: "customer@example.com",
       phone: "+55 11 99999-9999",
       taxId: null,
+      ownerUserId: "user-2",
       createdAt: "2026-04-06T10:00:00.000Z",
       updatedAt: "2026-04-06T10:00:00.000Z",
     })),
+    findOwnedById: vi.fn(async () => null),
     findByEmail: vi.fn(async () => null),
     findByTaxId: vi.fn(async () => null),
     list: vi.fn(async () => ({
@@ -93,6 +102,7 @@ function createMockProductRepository(): IProductRepository {
       price: "50.00",
       stock: 5,
       isActive: true,
+      ownerUserId: "user-2",
       createdAt: "2026-04-06T10:00:00.000Z",
       updatedAt: "2026-04-06T10:00:00.000Z",
     },
@@ -104,6 +114,7 @@ function createMockProductRepository(): IProductRepository {
       price: "50.00",
       stock: 5,
       isActive: true,
+      ownerUserId: "user-2",
       createdAt: "2026-04-06T10:00:00.000Z",
       updatedAt: "2026-04-06T10:00:00.000Z",
     },
@@ -112,6 +123,7 @@ function createMockProductRepository(): IProductRepository {
   return {
     create: vi.fn(async () => products[0]!),
     findById: vi.fn(async (id: string) => products.find((product) => product.id === id) ?? null),
+    findOwnedById: vi.fn(async () => null),
     findManyByIds: vi.fn(async (ids: string[]) =>
       products.filter((product) => ids.includes(product.id)),
     ),
@@ -140,7 +152,7 @@ describe("CreateOrderUseCase", () => {
   });
 
   it("creates an order successfully", async () => {
-    const input: CreateOrderInput = {
+    const input = {
       customerId: "customer-1",
       items: [
         {
@@ -157,7 +169,7 @@ describe("CreateOrderUseCase", () => {
     };
 
     const useCase = new CreateOrderUseCase(mockRepo, customerRepository, productRepository);
-    const result = await useCase.execute(input);
+    const result = await useCase.execute(input, ACTOR);
 
     expect(result).toMatchObject({
       id: "order-1",
@@ -167,12 +179,12 @@ describe("CreateOrderUseCase", () => {
       total: "150.00",
     });
     expect(result.items).toHaveLength(2);
-    expect(mockRepo.create).toHaveBeenCalledWith(input);
+    expect(mockRepo.create).toHaveBeenCalledWith({ ...input, ownerUserId: ACTOR.actorUserId });
     expect(mockRepo.create).toHaveBeenCalledTimes(1);
   });
 
   it("creates an order with single item", async () => {
-    const input: CreateOrderInput = {
+    const input = {
       customerId: "customer-1",
       items: [
         {
@@ -184,9 +196,9 @@ describe("CreateOrderUseCase", () => {
     };
 
     const useCase = new CreateOrderUseCase(mockRepo, customerRepository, productRepository);
-    await useCase.execute(input);
+    await useCase.execute(input, ACTOR);
 
-    expect(mockRepo.create).toHaveBeenCalledWith(input);
+    expect(mockRepo.create).toHaveBeenCalledWith({ ...input, ownerUserId: ACTOR.actorUserId });
   });
 
   it("throws when customer does not exist", async () => {
@@ -195,10 +207,13 @@ describe("CreateOrderUseCase", () => {
     const useCase = new CreateOrderUseCase(mockRepo, customerRepository, productRepository);
 
     await expect(
-      useCase.execute({
-        customerId: "missing-customer",
-        items: [{ productId: "product-1", quantity: 1, unitPrice: "50.00" }],
-      }),
+      useCase.execute(
+        {
+          customerId: "missing-customer",
+          items: [{ productId: "product-1", quantity: 1, unitPrice: "50.00" }],
+        },
+        ACTOR,
+      ),
     ).rejects.toThrow(NotFoundException);
   });
 });

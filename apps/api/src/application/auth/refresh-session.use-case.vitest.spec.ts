@@ -92,8 +92,13 @@ describe("RefreshSessionUseCase", () => {
 
     const authSessionRepository: IAuthSessionRepository = {
       findUserByEmail: vi.fn(),
+      findUserById: vi.fn(async () => null),
       findCurrentUserById: vi.fn(async () => null),
       findSessionById: vi.fn(async () => createActiveSession()),
+      updateCurrentUserProfile: vi.fn(async () => {
+        throw new Error("not implemented");
+      }),
+      updateCurrentUserPassword: vi.fn(async () => undefined),
       createSession: vi.fn(
         async (input): Promise<AuthSession> => ({
           id: input.id,
@@ -108,6 +113,7 @@ describe("RefreshSessionUseCase", () => {
       ),
       revokeSessionById: vi.fn(async () => undefined),
       revokeAllSessionsByUserId: vi.fn(async () => undefined),
+      revokeOtherSessionsByUserId: vi.fn(async () => undefined),
       incrementUserTokenVersion: vi.fn(async () => undefined),
     };
 
@@ -154,11 +160,17 @@ describe("RefreshSessionUseCase", () => {
 
     const authSessionRepository: IAuthSessionRepository = {
       findUserByEmail: vi.fn(),
+      findUserById: vi.fn(async () => null),
       findCurrentUserById: vi.fn(async () => null),
       findSessionById: vi.fn(async () => revokedSession),
+      updateCurrentUserProfile: vi.fn(async () => {
+        throw new Error("not implemented");
+      }),
+      updateCurrentUserPassword: vi.fn(async () => undefined),
       createSession: vi.fn(),
       revokeSessionById: vi.fn(async () => undefined),
       revokeAllSessionsByUserId: vi.fn(async () => undefined),
+      revokeOtherSessionsByUserId: vi.fn(async () => undefined),
       incrementUserTokenVersion: vi.fn(async () => undefined),
     };
 
@@ -202,11 +214,17 @@ describe("RefreshSessionUseCase", () => {
 
     const authSessionRepository: IAuthSessionRepository = {
       findUserByEmail: vi.fn(),
+      findUserById: vi.fn(async () => null),
       findCurrentUserById: vi.fn(async () => null),
       findSessionById: vi.fn(async () => createActiveSession()),
+      updateCurrentUserProfile: vi.fn(async () => {
+        throw new Error("not implemented");
+      }),
+      updateCurrentUserPassword: vi.fn(async () => undefined),
       createSession: vi.fn(),
       revokeSessionById: vi.fn(async () => undefined),
       revokeAllSessionsByUserId: vi.fn(async () => undefined),
+      revokeOtherSessionsByUserId: vi.fn(async () => undefined),
       incrementUserTokenVersion: vi.fn(async () => undefined),
     };
 
@@ -251,8 +269,13 @@ describe("RefreshSessionUseCase", () => {
 
     const authSessionRepository: IAuthSessionRepository = {
       findUserByEmail: vi.fn(),
+      findUserById: vi.fn(async () => null),
       findCurrentUserById: vi.fn(async () => null),
       findSessionById: vi.fn(async () => createActiveSession()),
+      updateCurrentUserProfile: vi.fn(async () => {
+        throw new Error("not implemented");
+      }),
+      updateCurrentUserPassword: vi.fn(async () => undefined),
       createSession: vi.fn(
         async (input): Promise<AuthSession> => ({
           id: input.id,
@@ -267,6 +290,7 @@ describe("RefreshSessionUseCase", () => {
       ),
       revokeSessionById: vi.fn(async () => undefined),
       revokeAllSessionsByUserId: vi.fn(async () => undefined),
+      revokeOtherSessionsByUserId: vi.fn(async () => undefined),
       incrementUserTokenVersion: vi.fn(async () => undefined),
     };
 

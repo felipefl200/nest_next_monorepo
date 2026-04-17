@@ -4,6 +4,11 @@ import { ConflictException } from "../../domain/exceptions/conflict.exception";
 import { NotFoundException } from "../../domain/exceptions/not-found.exception";
 import type { IProductRepository, ProductEntity } from "../../domain/products/product.types";
 
+const ACTOR = {
+  actorUserId: "user-1",
+  actorRole: "MANAGER" as const,
+};
+
 function createMockRepository(): IProductRepository {
   const mockProduct: ProductEntity = {
     id: "product-1",
@@ -13,6 +18,7 @@ function createMockRepository(): IProductRepository {
     price: "99.99",
     stock: 100,
     isActive: true,
+    ownerUserId: ACTOR.actorUserId,
     createdAt: "2026-04-06T10:00:00.000Z",
     updatedAt: "2026-04-06T10:00:00.000Z",
   };
@@ -20,6 +26,7 @@ function createMockRepository(): IProductRepository {
   return {
     create: vi.fn(async () => mockProduct),
     findById: vi.fn(async (id: string) => (id === "product-1" ? mockProduct : null)),
+    findOwnedById: vi.fn(async (id: string) => (id === "product-1" ? mockProduct : null)),
     findManyByIds: vi.fn(async () => [mockProduct]),
     list: vi.fn(async () => ({
       data: [],
@@ -43,9 +50,9 @@ describe("DeleteProductUseCase", () => {
 
   it("deletes product successfully", async () => {
     const useCase = new DeleteProductUseCase(mockRepo);
-    await useCase.execute("product-1");
+    await useCase.execute("product-1", ACTOR);
 
-    expect(mockRepo.findById).toHaveBeenCalledWith("product-1");
+    expect(mockRepo.findOwnedById).toHaveBeenCalledWith("product-1", ACTOR.actorUserId);
     expect(mockRepo.delete).toHaveBeenCalledWith("product-1");
     expect(mockRepo.delete).toHaveBeenCalledTimes(1);
   });
@@ -53,10 +60,10 @@ describe("DeleteProductUseCase", () => {
   it("throws NotFoundException when product not found", async () => {
     const useCase = new DeleteProductUseCase(mockRepo);
 
-    await expect(useCase.execute("non-existent-id")).rejects.toThrow(
+    await expect(useCase.execute("non-existent-id", ACTOR)).rejects.toThrow(
       NotFoundException,
     );
-    await expect(useCase.execute("non-existent-id")).rejects.toThrow(
+    await expect(useCase.execute("non-existent-id", ACTOR)).rejects.toThrow(
       "Product not found",
     );
     expect(mockRepo.delete).not.toHaveBeenCalled();
@@ -67,7 +74,7 @@ describe("DeleteProductUseCase", () => {
 
     const useCase = new DeleteProductUseCase(mockRepo);
 
-    await expect(useCase.execute("product-1")).rejects.toThrow(ConflictException);
+    await expect(useCase.execute("product-1", ACTOR)).rejects.toThrow(ConflictException);
     expect(mockRepo.delete).not.toHaveBeenCalled();
   });
 });

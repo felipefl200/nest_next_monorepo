@@ -1,9 +1,15 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { UpdateOrderUseCase } from "./update-order.use-case";
+import { ForbiddenException } from "../../domain/exceptions/forbidden.exception";
 import { NotFoundException } from "../../domain/exceptions/not-found.exception";
 import type { ICustomerRepository } from "../../domain/customers/customer.types";
 import type { IOrderRepository, OrderEntity, UpdateOrderInput } from "../../domain/orders/order.types";
 import type { IProductRepository, ProductEntity } from "../../domain/products/product.types";
+
+const ACTOR = {
+  actorUserId: "user-1",
+  actorRole: "MANAGER" as const,
+};
 
 function createMockRepository(): IOrderRepository {
   const mockOrder: OrderEntity = {
@@ -13,6 +19,7 @@ function createMockRepository(): IOrderRepository {
     customerName: "Test Customer",
     status: "PENDING",
     total: "150.00",
+    ownerUserId: ACTOR.actorUserId,
     items: [],
     createdAt: "2026-04-06T10:00:00.000Z",
     updatedAt: "2026-04-06T10:00:00.000Z",
@@ -37,6 +44,7 @@ function createMockRepository(): IOrderRepository {
   return {
     create: vi.fn(async () => mockOrder),
     findById: vi.fn(async (id: string) => (id === "order-1" ? mockOrder : null)),
+    findOwnedById: vi.fn(async (id: string) => (id === "order-1" ? mockOrder : null)),
     findByNumber: vi.fn(async () => null),
     list: vi.fn(async () => ({
       data: [],
@@ -64,11 +72,13 @@ function createMockCustomerRepository(): ICustomerRepository {
             email: `${id}@example.com`,
             phone: "+55 11 99999-9999",
             taxId: null,
+            ownerUserId: "user-2",
             createdAt: "2026-04-06T10:00:00.000Z",
             updatedAt: "2026-04-06T10:00:00.000Z",
           }
         : null,
     ),
+    findOwnedById: vi.fn(async () => null),
     findByEmail: vi.fn(async () => null),
     findByTaxId: vi.fn(async () => null),
     list: vi.fn(async () => ({
@@ -96,6 +106,7 @@ function createMockProductRepository(): IProductRepository {
       price: "50.00",
       stock: 10,
       isActive: true,
+      ownerUserId: "user-2",
       createdAt: "2026-04-06T10:00:00.000Z",
       updatedAt: "2026-04-06T10:00:00.000Z",
     },
@@ -107,6 +118,7 @@ function createMockProductRepository(): IProductRepository {
       price: "40.00",
       stock: 10,
       isActive: true,
+      ownerUserId: "user-2",
       createdAt: "2026-04-06T10:00:00.000Z",
       updatedAt: "2026-04-06T10:00:00.000Z",
     },
@@ -115,6 +127,7 @@ function createMockProductRepository(): IProductRepository {
   return {
     create: vi.fn(async () => products[0]!),
     findById: vi.fn(async (id: string) => products.find((product) => product.id === id) ?? null),
+    findOwnedById: vi.fn(async () => null),
     findManyByIds: vi.fn(async (ids: string[]) =>
       products.filter((product) => ids.includes(product.id)),
     ),
@@ -155,10 +168,10 @@ describe("UpdateOrderUseCase", () => {
 
   it("updates order successfully", async () => {
     const useCase = new UpdateOrderUseCase(mockRepo, customerRepository, productRepository);
-    const result = await useCase.execute("order-1", input);
+    const result = await useCase.execute("order-1", input, ACTOR);
 
     expect(result.status).toBe("CONFIRMED");
-    expect(mockRepo.findById).toHaveBeenCalledWith("order-1");
+    expect(mockRepo.findOwnedById).toHaveBeenCalledWith("order-1", ACTOR.actorUserId);
     expect(mockRepo.update).toHaveBeenCalledWith("order-1", input);
   });
 
@@ -166,10 +179,10 @@ describe("UpdateOrderUseCase", () => {
     const useCase = new UpdateOrderUseCase(mockRepo, customerRepository, productRepository);
 
     await expect(
-      useCase.execute("non-existent-id", input),
+      useCase.execute("non-existent-id", input, ACTOR),
     ).rejects.toThrow(NotFoundException);
     await expect(
-      useCase.execute("non-existent-id", input),
+      useCase.execute("non-existent-id", input, ACTOR),
     ).rejects.toThrow("Order not found");
   });
 
@@ -178,7 +191,7 @@ describe("UpdateOrderUseCase", () => {
 
     const useCase = new UpdateOrderUseCase(mockRepo, customerRepository, productRepository);
 
-    await expect(useCase.execute("order-1", input)).rejects.toThrow(NotFoundException);
+    await expect(useCase.execute("order-1", input, ACTOR)).rejects.toThrow(NotFoundException);
   });
 
   it("throws when a product does not exist", async () => {
@@ -186,6 +199,14 @@ describe("UpdateOrderUseCase", () => {
 
     const useCase = new UpdateOrderUseCase(mockRepo, customerRepository, productRepository);
 
-    await expect(useCase.execute("order-1", input)).rejects.toThrow(NotFoundException);
+    await expect(useCase.execute("order-1", input, ACTOR)).rejects.toThrow(NotFoundException);
+  });
+
+  it("throws forbidden when manager tries to edit another user's order", async () => {
+    vi.mocked(mockRepo.findOwnedById).mockResolvedValue(null);
+
+    const useCase = new UpdateOrderUseCase(mockRepo, customerRepository, productRepository);
+
+    await expect(useCase.execute("order-1", input, ACTOR)).rejects.toThrow(ForbiddenException);
   });
 });

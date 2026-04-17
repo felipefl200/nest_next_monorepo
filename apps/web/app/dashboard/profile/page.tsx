@@ -6,18 +6,18 @@ import {
 } from "@repo/ui/components/page-header";
 import { ProfileDetailsForm } from "@/components/profile/profile-details-form";
 import { ChangePasswordForm } from "@/components/profile/change-password-form";
-import { getCurrentUserProfile } from "@/src/services/auth/session";
+import { getOwnAccountProfile } from "@/src/services/auth/bff";
 
 export default async function ProfilePage() {
-  const profile = await getCurrentUserProfile("/dashboard");
+  const profile = await getOwnAccountProfile();
 
   return (
     <section className="space-y-6">
       <PageHeader>
         <PageHeaderContent>
-          <PageHeaderTitle>Configuracoes do Perfil</PageHeaderTitle>
+          <PageHeaderTitle>Minha Conta</PageHeaderTitle>
           <PageHeaderDescription>
-            Gerencie seus dados de acesso e informacoes pessoais.
+            Gerencie os dados da sua conta e a troca de senha.
           </PageHeaderDescription>
         </PageHeaderContent>
       </PageHeader>

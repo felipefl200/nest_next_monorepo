@@ -16,6 +16,7 @@ function createMockRepository(): ICustomerRepository {
     email: "john@example.com",
     phone: "+55 11 99999-9999",
     taxId: "12345678900",
+    ownerUserId: "user-1",
     createdAt: "2026-04-06T10:00:00.000Z",
     updatedAt: "2026-04-06T10:00:00.000Z",
   };
@@ -23,6 +24,7 @@ function createMockRepository(): ICustomerRepository {
   return {
     create: vi.fn(async (_input: CreateCustomerInput) => customer),
     findById: vi.fn(async () => customer),
+    findOwnedById: vi.fn(async () => customer),
     findByEmail: vi.fn(async () => customer),
     findByTaxId: vi.fn(async () => customer),
     list: vi.fn(async (query: ListCustomersQuery): Promise<PaginatedResult<CustomerEntity>> => ({

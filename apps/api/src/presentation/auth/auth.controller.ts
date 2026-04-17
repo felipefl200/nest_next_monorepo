@@ -17,6 +17,10 @@ import { GetCurrentUserProfileUseCase } from "../../application/auth/get-current
 import { GetOwnAccountProfileUseCase } from "../../application/auth/get-own-account-profile.use-case";
 import { UpdateOwnProfileUseCase } from "../../application/auth/update-own-profile.use-case";
 import { ChangeOwnPasswordUseCase } from "../../application/auth/change-own-password.use-case";
+import {
+  changeOwnPasswordInputSchema,
+  updateOwnProfileInputSchema,
+} from "../../application/auth/auth.schemas";
 import type { AccessTokenPayload } from "../../domain/auth/auth.types";
 import { Public } from "../decorators/public.decorator";
 
@@ -79,27 +83,18 @@ export class AuthController {
 
   @Patch("account")
   public async updateOwnAccount(@Body() body: unknown, @Req() request: AuthenticatedRequest) {
-    const payload = typeof body === "object" && body !== null ? body : {};
-
-    return this.updateOwnProfileUseCase.execute(request.user.sub, {
-      name: String((payload as Record<string, unknown>).name ?? ""),
-      email: String((payload as Record<string, unknown>).email ?? ""),
-      currentPassword: String((payload as Record<string, unknown>).currentPassword ?? ""),
-    });
+    return this.updateOwnProfileUseCase.execute(
+      request.user.sub,
+      updateOwnProfileInputSchema.parse(body),
+    );
   }
 
   @Post("account/change-password")
   public async changeOwnPassword(@Body() body: unknown, @Req() request: AuthenticatedRequest) {
-    const payload = typeof body === "object" && body !== null ? body : {};
-
     return this.changeOwnPasswordUseCase.execute({
       userId: request.user.sub,
       currentSessionId: request.user.sessionId,
-      payload: {
-        currentPassword: String((payload as Record<string, unknown>).currentPassword ?? ""),
-        newPassword: String((payload as Record<string, unknown>).newPassword ?? ""),
-        confirmNewPassword: String((payload as Record<string, unknown>).confirmNewPassword ?? ""),
-      },
+      payload: changeOwnPasswordInputSchema.parse(body),
     });
   }
 

@@ -23,7 +23,7 @@ export function DashboardNav({ role }: DashboardNavProps) {
     items.push({ href: "/dashboard/users", label: "Users" });
   }
 
-  items.push({ href: "/dashboard/profile", label: "Profile" });
+  items.push({ href: "/dashboard/profile", label: "Minha conta" });
 
   return (
     <nav className="flex flex-wrap gap-2">

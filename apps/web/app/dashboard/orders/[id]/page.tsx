@@ -19,6 +19,8 @@ import {
 } from "@repo/ui/components/page-header";
 import { StatusBadge } from "@repo/ui/components/status-badge";
 import { DeleteOrderButton } from "@/components/orders/delete-order-button";
+import { canManageOwnedResource } from "@/src/services/auth/authorization";
+import { getCurrentUserProfile } from "@/src/services/auth/session";
 import { getOrder } from "@/src/services/orders/bff";
 import { formatCurrency, formatDate } from "@/src/services/shared/formatters";
 
@@ -43,7 +45,11 @@ function getOrderStatusVariant(status: string): "warning" | "success" | "danger"
 
 export default async function OrderDetailPage({ params }: OrderDetailPageProps) {
   const { id } = await params;
-  const order = await getOrder(id);
+  const [order, profile] = await Promise.all([
+    getOrder(id),
+    getCurrentUserProfile("/dashboard/orders"),
+  ]);
+  const canManageOrder = canManageOwnedResource(profile, order.ownerUserId);
 
   return (
     <section className="space-y-6">
@@ -55,13 +61,17 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
           </PageHeaderDescription>
         </PageHeaderContent>
         <PageHeaderActions>
-          <Link
-            href={`/dashboard/orders/${order.id}/edit`}
-            className={buttonVariants({ variant: "outline", size: "sm" })}
-          >
-            Editar
-          </Link>
-          <DeleteOrderButton orderId={order.id} redirectTo="/dashboard/orders" />
+          {canManageOrder && (
+            <>
+              <Link
+                href={`/dashboard/orders/${order.id}/edit`}
+                className={buttonVariants({ variant: "outline", size: "sm" })}
+              >
+                Editar
+              </Link>
+              <DeleteOrderButton orderId={order.id} redirectTo="/dashboard/orders" />
+            </>
+          )}
         </PageHeaderActions>
       </PageHeader>
 

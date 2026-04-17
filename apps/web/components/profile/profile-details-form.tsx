@@ -35,7 +35,7 @@ export function ProfileDetailsForm({ profile }: ProfileDetailsFormProps) {
     setSuccess(null);
 
     try {
-      const response = await fetch("/api/profile", {
+      const response = await fetch("/api/auth/account", {
         method: "PATCH",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({

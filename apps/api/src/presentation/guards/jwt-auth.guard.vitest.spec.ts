@@ -23,11 +23,17 @@ describe("JwtAuthGuard", () => {
 
     authSessionRepository = {
       findUserByEmail: vi.fn(),
+      findUserById: vi.fn(),
       findCurrentUserById: vi.fn(async () => null),
       findSessionById: vi.fn(),
+      updateCurrentUserProfile: vi.fn(async () => {
+        throw new Error("not implemented");
+      }),
+      updateCurrentUserPassword: vi.fn(async () => undefined),
       createSession: vi.fn(),
       revokeSessionById: vi.fn(),
       revokeAllSessionsByUserId: vi.fn(),
+      revokeOtherSessionsByUserId: vi.fn(),
       incrementUserTokenVersion: vi.fn(),
     };
 

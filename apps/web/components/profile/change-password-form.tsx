@@ -34,7 +34,7 @@ export function ChangePasswordForm() {
     }
 
     try {
-      const response = await fetch("/api/profile/password", {
+      const response = await fetch("/api/auth/account/change-password", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({

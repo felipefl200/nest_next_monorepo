@@ -9,6 +9,8 @@ import {
   PageHeaderTitle,
 } from "@repo/ui/components/page-header";
 import { DeleteCustomerButton } from "@/components/customers/delete-customer-button";
+import { canManageOwnedResource } from "@/src/services/auth/authorization";
+import { getCurrentUserProfile } from "@/src/services/auth/session";
 import { getCustomer } from "@/src/services/customers/bff";
 import { formatDate } from "@/src/services/shared/formatters";
 
@@ -20,7 +22,11 @@ export default async function CustomerDetailPage({
   params,
 }: CustomerDetailPageProps) {
   const { id } = await params;
-  const customer = await getCustomer(id);
+  const [customer, profile] = await Promise.all([
+    getCustomer(id),
+    getCurrentUserProfile("/dashboard/customers"),
+  ]);
+  const canManageCustomer = canManageOwnedResource(profile, customer.ownerUserId);
 
   return (
     <section className="space-y-6">
@@ -32,16 +38,20 @@ export default async function CustomerDetailPage({
           </PageHeaderDescription>
         </PageHeaderContent>
         <PageHeaderActions>
-          <Link
-            href={`/dashboard/customers/${customer.id}/edit`}
-            className={buttonVariants({ variant: "outline", size: "sm" })}
-          >
-            Editar
-          </Link>
-          <DeleteCustomerButton
-            customerId={customer.id}
-            redirectTo="/dashboard/customers"
-          />
+          {canManageCustomer && (
+            <>
+              <Link
+                href={`/dashboard/customers/${customer.id}/edit`}
+                className={buttonVariants({ variant: "outline", size: "sm" })}
+              >
+                Editar
+              </Link>
+              <DeleteCustomerButton
+                customerId={customer.id}
+                redirectTo="/dashboard/customers"
+              />
+            </>
+          )}
         </PageHeaderActions>
       </PageHeader>
 

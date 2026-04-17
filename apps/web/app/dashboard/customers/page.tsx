@@ -35,6 +35,7 @@ import {
   PaginationSummary,
 } from "@repo/ui/components/pagination";
 import { DeleteCustomerButton } from "@/components/customers/delete-customer-button";
+import { canManageOwnedResource } from "@/src/services/auth/authorization";
 import { getCurrentUserProfile } from "@/src/services/auth/session";
 import { listCustomers } from "@/src/services/customers/bff";
 import { formatDate } from "@/src/services/shared/formatters";
@@ -150,7 +151,7 @@ export default async function CustomersPage({ searchParams }: CustomersPageProps
                         >
                           Detalhe
                         </Link>
-                        {(profile.role === "ADMIN" || profile.id === customer.ownerUserId) && (
+                        {canManageOwnedResource(profile, customer.ownerUserId) && (
                           <>
                             <Link
                               href={`/dashboard/customers/${customer.id}/edit`}

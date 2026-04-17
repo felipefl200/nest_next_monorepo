@@ -10,6 +10,11 @@ import type {
   UpdateCustomerInput,
 } from "../../domain/customers/customer.types";
 
+const ACTOR = {
+  actorUserId: "user-1",
+  actorRole: "MANAGER" as const,
+};
+
 function createCustomerEntity(id = "customer-1", email = "john@example.com"): CustomerEntity {
   return {
     id,
@@ -17,6 +22,7 @@ function createCustomerEntity(id = "customer-1", email = "john@example.com"): Cu
     email,
     phone: "+55 11 99999-9999",
     taxId: "12345678900",
+    ownerUserId: ACTOR.actorUserId,
     createdAt: "2026-04-06T10:00:00.000Z",
     updatedAt: "2026-04-06T10:00:00.000Z",
   };
@@ -26,6 +32,7 @@ function createMockRepository(): ICustomerRepository {
   return {
     create: vi.fn(async (input: CreateCustomerInput) => createCustomerEntity("customer-1", input.email)),
     findById: vi.fn(async () => null),
+    findOwnedById: vi.fn(async () => null),
     findByEmail: vi.fn(async () => null),
     findByTaxId: vi.fn(async () => null),
     list: vi.fn(async (_query: ListCustomersQuery): Promise<PaginatedResult<CustomerEntity>> => ({
@@ -51,12 +58,15 @@ describe("CreateCustomerUseCase", () => {
   it("creates customer when email is unique", async () => {
     const useCase = new CreateCustomerUseCase(repository);
 
-    const result = await useCase.execute({
-      name: "John",
-      email: "john@example.com",
-      phone: "+55 11 99999-9999",
-      taxId: "12345678900",
-    });
+    const result = await useCase.execute(
+      {
+        name: "John",
+        email: "john@example.com",
+        phone: "+55 11 99999-9999",
+        taxId: "12345678900",
+      },
+      ACTOR,
+    );
 
     expect(result.email).toBe("john@example.com");
     expect(repository.findByEmail).toHaveBeenCalledWith("john@example.com");
@@ -70,11 +80,14 @@ describe("CreateCustomerUseCase", () => {
     const useCase = new CreateCustomerUseCase(repository);
 
     await expect(
-      useCase.execute({
-        name: "John",
-        email: "john@example.com",
-        phone: "+55 11 99999-9999",
-      }),
+      useCase.execute(
+        {
+          name: "John",
+          email: "john@example.com",
+          phone: "+55 11 99999-9999",
+        },
+        ACTOR,
+      ),
     ).rejects.toThrow(ConflictException);
 
     expect(repository.create).not.toHaveBeenCalled();
@@ -86,12 +99,15 @@ describe("CreateCustomerUseCase", () => {
     const useCase = new CreateCustomerUseCase(repository);
 
     await expect(
-      useCase.execute({
-        name: "John",
-        email: "another@example.com",
-        phone: "+55 11 99999-9999",
-        taxId: "12345678900",
-      }),
+      useCase.execute(
+        {
+          name: "John",
+          email: "another@example.com",
+          phone: "+55 11 99999-9999",
+          taxId: "12345678900",
+        },
+        ACTOR,
+      ),
     ).rejects.toThrow(ConflictException);
   });
 });

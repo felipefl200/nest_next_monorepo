@@ -37,6 +37,7 @@ import {
 import { Select } from "@repo/ui/components/select";
 import { StatusBadge } from "@repo/ui/components/status-badge";
 import { DeleteProductButton } from "@/components/products/delete-product-button";
+import { canManageOwnedResource } from "@/src/services/auth/authorization";
 import { getCurrentUserProfile } from "@/src/services/auth/session";
 import { listProducts } from "@/src/services/products/bff";
 import { formatCurrency, formatDate } from "@/src/services/shared/formatters";
@@ -173,7 +174,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                         >
                           Detalhe
                         </Link>
-                        {(profile.role === "ADMIN" || profile.id === product.ownerUserId) && (
+                        {canManageOwnedResource(profile, product.ownerUserId) && (
                           <>
                             <Link
                               href={`/dashboard/products/${product.id}/edit`}

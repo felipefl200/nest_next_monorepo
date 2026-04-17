@@ -17,6 +17,7 @@ function createCustomerEntity(): CustomerEntity {
     email: "john@example.com",
     phone: "+55 11 99999-9999",
     taxId: "12345678900",
+    ownerUserId: "user-1",
     createdAt: "2026-04-06T10:00:00.000Z",
     updatedAt: "2026-04-06T10:00:00.000Z",
   };
@@ -26,6 +27,7 @@ function createMockRepository(): ICustomerRepository {
   return {
     create: vi.fn(async (_input: CreateCustomerInput) => createCustomerEntity()),
     findById: vi.fn(async () => null),
+    findOwnedById: vi.fn(async () => null),
     findByEmail: vi.fn(async () => null),
     findByTaxId: vi.fn(async () => null),
     list: vi.fn(async (_query: ListCustomersQuery): Promise<PaginatedResult<CustomerEntity>> => ({

@@ -11,6 +11,7 @@ function createMockRepository(): IOrderRepository {
     customerName: "Test Customer",
     status: "PENDING",
     total: "150.00",
+    ownerUserId: "user-1",
     items: [
       {
         productId: "product-1",
@@ -26,6 +27,7 @@ function createMockRepository(): IOrderRepository {
   return {
     create: vi.fn(async () => mockOrder),
     findById: vi.fn(async (id: string) => (id === "order-1" ? mockOrder : null)),
+    findOwnedById: vi.fn(async (id: string) => (id === "order-1" ? mockOrder : null)),
     findByNumber: vi.fn(async () => null),
     list: vi.fn(async () => ({
       data: [],

@@ -10,6 +10,8 @@ import {
 } from "@repo/ui/components/page-header";
 import { StatusBadge } from "@repo/ui/components/status-badge";
 import { DeleteProductButton } from "@/components/products/delete-product-button";
+import { canManageOwnedResource } from "@/src/services/auth/authorization";
+import { getCurrentUserProfile } from "@/src/services/auth/session";
 import { getProduct } from "@/src/services/products/bff";
 import { formatCurrency, formatDate } from "@/src/services/shared/formatters";
 
@@ -19,7 +21,11 @@ type ProductDetailPageProps = {
 
 export default async function ProductDetailPage({ params }: ProductDetailPageProps) {
   const { id } = await params;
-  const product = await getProduct(id);
+  const [product, profile] = await Promise.all([
+    getProduct(id),
+    getCurrentUserProfile("/dashboard/products"),
+  ]);
+  const canManageProduct = canManageOwnedResource(profile, product.ownerUserId);
 
   return (
     <section className="space-y-6">
@@ -31,16 +37,20 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
           </PageHeaderDescription>
         </PageHeaderContent>
         <PageHeaderActions>
-          <Link
-            href={`/dashboard/products/${product.id}/edit`}
-            className={buttonVariants({ variant: "outline", size: "sm" })}
-          >
-            Editar
-          </Link>
-          <DeleteProductButton
-            productId={product.id}
-            redirectTo="/dashboard/products"
-          />
+          {canManageProduct && (
+            <>
+              <Link
+                href={`/dashboard/products/${product.id}/edit`}
+                className={buttonVariants({ variant: "outline", size: "sm" })}
+              >
+                Editar
+              </Link>
+              <DeleteProductButton
+                productId={product.id}
+                redirectTo="/dashboard/products"
+              />
+            </>
+          )}
         </PageHeaderActions>
       </PageHeader>
 

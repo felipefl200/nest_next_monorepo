@@ -12,6 +12,7 @@ function createMockRepository(): IProductRepository {
     price: "99.99",
     stock: 100,
     isActive: true,
+    ownerUserId: "user-1",
     createdAt: "2026-04-06T10:00:00.000Z",
     updatedAt: "2026-04-06T10:00:00.000Z",
   };
@@ -19,6 +20,7 @@ function createMockRepository(): IProductRepository {
   return {
     create: vi.fn(async () => mockProduct),
     findById: vi.fn(async (id: string) => (id === "product-1" ? mockProduct : null)),
+    findOwnedById: vi.fn(async (id: string) => (id === "product-1" ? mockProduct : null)),
     findManyByIds: vi.fn(async () => [mockProduct]),
     list: vi.fn(async () => ({
       data: [],

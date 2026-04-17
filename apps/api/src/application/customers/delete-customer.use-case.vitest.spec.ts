@@ -11,6 +11,11 @@ import type {
   UpdateCustomerInput,
 } from "../../domain/customers/customer.types";
 
+const ACTOR = {
+  actorUserId: "user-1",
+  actorRole: "MANAGER" as const,
+};
+
 function createCustomerEntity(): CustomerEntity {
   return {
     id: "customer-1",
@@ -18,6 +23,7 @@ function createCustomerEntity(): CustomerEntity {
     email: "john@example.com",
     phone: "+55 11 99999-9999",
     taxId: "12345678900",
+    ownerUserId: ACTOR.actorUserId,
     createdAt: "2026-04-06T10:00:00.000Z",
     updatedAt: "2026-04-06T10:00:00.000Z",
   };
@@ -27,6 +33,7 @@ function createMockRepository(): ICustomerRepository {
   return {
     create: vi.fn(async (_input: CreateCustomerInput) => createCustomerEntity()),
     findById: vi.fn(async () => null),
+    findOwnedById: vi.fn(async () => null),
     findByEmail: vi.fn(async () => null),
     findByTaxId: vi.fn(async () => null),
     list: vi.fn(async (_query: ListCustomersQuery): Promise<PaginatedResult<CustomerEntity>> => ({
@@ -50,28 +57,28 @@ describe("DeleteCustomerUseCase", () => {
   });
 
   it("deletes customer when no related orders exist", async () => {
-    vi.mocked(repository.findById).mockResolvedValue(createCustomerEntity());
+    vi.mocked(repository.findOwnedById).mockResolvedValue(createCustomerEntity());
     vi.mocked(repository.countOrdersByCustomerId).mockResolvedValue(0);
 
     const useCase = new DeleteCustomerUseCase(repository);
 
-    await expect(useCase.execute("customer-1")).resolves.toBeUndefined();
+    await expect(useCase.execute("customer-1", ACTOR)).resolves.toBeUndefined();
     expect(repository.delete).toHaveBeenCalledWith("customer-1");
   });
 
   it("throws not found when customer does not exist", async () => {
     const useCase = new DeleteCustomerUseCase(repository);
 
-    await expect(useCase.execute("missing")).rejects.toThrow(NotFoundException);
+    await expect(useCase.execute("missing", ACTOR)).rejects.toThrow(NotFoundException);
   });
 
   it("throws conflict when customer has related orders", async () => {
-    vi.mocked(repository.findById).mockResolvedValue(createCustomerEntity());
+    vi.mocked(repository.findOwnedById).mockResolvedValue(createCustomerEntity());
     vi.mocked(repository.countOrdersByCustomerId).mockResolvedValue(3);
 
     const useCase = new DeleteCustomerUseCase(repository);
 
-    await expect(useCase.execute("customer-1")).rejects.toThrow(ConflictException);
+    await expect(useCase.execute("customer-1", ACTOR)).rejects.toThrow(ConflictException);
     expect(repository.delete).not.toHaveBeenCalled();
   });
 });

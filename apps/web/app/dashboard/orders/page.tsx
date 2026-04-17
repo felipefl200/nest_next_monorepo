@@ -36,6 +36,7 @@ import {
 import { Select } from "@repo/ui/components/select";
 import { StatusBadge } from "@repo/ui/components/status-badge";
 import { DeleteOrderButton } from "@/components/orders/delete-order-button";
+import { canManageOwnedResource } from "@/src/services/auth/authorization";
 import { getCurrentUserProfile } from "@/src/services/auth/session";
 import { listCustomers } from "@/src/services/customers/bff";
 import { listOrders } from "@/src/services/orders/bff";
@@ -177,7 +178,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
                         >
                           Detalhe
                         </Link>
-                        {(profile.role === "ADMIN" || profile.id === order.ownerUserId) && (
+                        {canManageOwnedResource(profile, order.ownerUserId) && (
                           <>
                             <Link
                               href={`/dashboard/orders/${order.id}/edit`}

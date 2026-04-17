@@ -16,6 +16,7 @@ function createMockRepository(): IOrderRepository {
       customerName: "Customer 1",
       status: "PENDING",
       total: "150.00",
+      ownerUserId: "user-1",
       items: [],
       createdAt: "2026-04-06T10:00:00.000Z",
       updatedAt: "2026-04-06T10:00:00.000Z",
@@ -27,6 +28,7 @@ function createMockRepository(): IOrderRepository {
       customerName: "Customer 2",
       status: "CONFIRMED",
       total: "250.00",
+      ownerUserId: "user-2",
       items: [],
       createdAt: "2026-04-06T11:00:00.000Z",
       updatedAt: "2026-04-06T11:00:00.000Z",
@@ -48,6 +50,7 @@ function createMockRepository(): IOrderRepository {
   return {
     create: mockCreate,
     findById: vi.fn(async () => null),
+    findOwnedById: vi.fn(async () => null),
     findByNumber: vi.fn(async () => null),
     list: vi.fn(async () => mockResult),
     update: mockUpdate,
@@ -120,6 +123,7 @@ describe("ListOrdersUseCase", () => {
         throw new Error("Not implemented");
       }),
       findById: vi.fn(async () => null),
+      findOwnedById: vi.fn(async () => null),
       findByNumber: vi.fn(async () => null),
       list: vi.fn(async () => ({
         data: [],

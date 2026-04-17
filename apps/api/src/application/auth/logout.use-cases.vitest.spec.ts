@@ -13,8 +13,13 @@ import type { AccessTokenPayload } from "../../domain/auth/auth.types";
 function createRepositoryMock(): IAuthSessionRepository {
   return {
     findUserByEmail: vi.fn(async (): Promise<AuthUser | null> => null),
+    findUserById: vi.fn(async (): Promise<AuthUser | null> => null),
     findCurrentUserById: vi.fn(async () => null),
     findSessionById: vi.fn(async (): Promise<AuthSessionWithUser | null> => null),
+    updateCurrentUserProfile: vi.fn(async () => {
+      throw new Error("not implemented");
+    }),
+    updateCurrentUserPassword: vi.fn(async () => undefined),
     createSession: vi.fn(async (input): Promise<AuthSession> => ({
       id: input.id,
       userId: input.userId,
@@ -27,6 +32,7 @@ function createRepositoryMock(): IAuthSessionRepository {
     })),
     revokeSessionById: vi.fn(async () => undefined),
     revokeAllSessionsByUserId: vi.fn(async () => undefined),
+    revokeOtherSessionsByUserId: vi.fn(async () => undefined),
     incrementUserTokenVersion: vi.fn(async () => undefined),
   };
 }

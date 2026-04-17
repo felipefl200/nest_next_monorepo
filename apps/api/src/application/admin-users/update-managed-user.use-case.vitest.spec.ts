@@ -48,7 +48,11 @@ describe("UpdateManagedUserUseCase", () => {
     const repository = createMockRepository();
     const useCase = new UpdateManagedUserUseCase(repository);
 
-    const result = await useCase.execute("user-1", { name: "Updated" });
+    const result = await useCase.execute({
+      actorUserId: "admin-1",
+      targetUserId: "user-1",
+      updates: { name: "Updated" },
+    });
 
     expect(result.id).toBe("user-1");
     expect(repository.updateUser).toHaveBeenCalledWith("user-1", { name: "Updated" });
@@ -59,7 +63,13 @@ describe("UpdateManagedUserUseCase", () => {
     vi.mocked(repository.findUserById).mockResolvedValue(null);
     const useCase = new UpdateManagedUserUseCase(repository);
 
-    await expect(useCase.execute("missing", { name: "Updated" })).rejects.toThrow(NotFoundException);
+    await expect(
+      useCase.execute({
+        actorUserId: "admin-1",
+        targetUserId: "missing",
+        updates: { name: "Updated" },
+      }),
+    ).rejects.toThrow(NotFoundException);
   });
 
   it("throws conflict when updating to existing email", async () => {
@@ -70,7 +80,11 @@ describe("UpdateManagedUserUseCase", () => {
     const useCase = new UpdateManagedUserUseCase(repository);
 
     await expect(
-      useCase.execute("user-1", { email: "used@example.com" }),
+      useCase.execute({
+        actorUserId: "admin-1",
+        targetUserId: "user-1",
+        updates: { email: "used@example.com" },
+      }),
     ).rejects.toThrow(ConflictException);
   });
 });
