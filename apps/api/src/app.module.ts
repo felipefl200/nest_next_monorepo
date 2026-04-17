@@ -27,6 +27,9 @@ import { RefreshSessionUseCase } from './application/auth/refresh-session.use-ca
 import { LogoutUseCase } from './application/auth/logout.use-case';
 import { LogoutAllUseCase } from './application/auth/logout-all.use-case';
 import { GetCurrentUserProfileUseCase } from './application/auth/get-current-user-profile.use-case';
+import { GetOwnAccountProfileUseCase } from './application/auth/get-own-account-profile.use-case';
+import { UpdateOwnProfileUseCase } from './application/auth/update-own-profile.use-case';
+import { ChangeOwnPasswordUseCase } from './application/auth/change-own-password.use-case';
 import { GetDashboardOverviewUseCase } from './application/dashboard/get-dashboard-overview.use-case';
 import { CreateOrderUseCase } from './application/orders/create-order.use-case';
 import { GetOrderUseCase } from './application/orders/get-order.use-case';
@@ -76,6 +79,9 @@ import { RoleGuard } from './presentation/guards/role.guard';
     LogoutUseCase,
     LogoutAllUseCase,
     GetCurrentUserProfileUseCase,
+    GetOwnAccountProfileUseCase,
+    UpdateOwnProfileUseCase,
+    ChangeOwnPasswordUseCase,
     GetDashboardOverviewUseCase,
     CreateOrderUseCase,
     GetOrderUseCase,

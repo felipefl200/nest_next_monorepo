@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpCode,
+  Patch,
   Post,
   Req,
   UnauthorizedException as NestUnauthorizedException,
@@ -13,6 +14,9 @@ import { RefreshSessionUseCase } from "../../application/auth/refresh-session.us
 import { LogoutUseCase } from "../../application/auth/logout.use-case";
 import { LogoutAllUseCase } from "../../application/auth/logout-all.use-case";
 import { GetCurrentUserProfileUseCase } from "../../application/auth/get-current-user-profile.use-case";
+import { GetOwnAccountProfileUseCase } from "../../application/auth/get-own-account-profile.use-case";
+import { UpdateOwnProfileUseCase } from "../../application/auth/update-own-profile.use-case";
+import { ChangeOwnPasswordUseCase } from "../../application/auth/change-own-password.use-case";
 import type { AccessTokenPayload } from "../../domain/auth/auth.types";
 import { Public } from "../decorators/public.decorator";
 
@@ -37,6 +41,9 @@ export class AuthController {
     private readonly logoutUseCase: LogoutUseCase,
     private readonly logoutAllUseCase: LogoutAllUseCase,
     private readonly getCurrentUserProfileUseCase: GetCurrentUserProfileUseCase,
+    private readonly getOwnAccountProfileUseCase: GetOwnAccountProfileUseCase,
+    private readonly updateOwnProfileUseCase: UpdateOwnProfileUseCase,
+    private readonly changeOwnPasswordUseCase: ChangeOwnPasswordUseCase,
   ) {}
 
   @Public()
@@ -63,6 +70,37 @@ export class AuthController {
   @Get("me")
   public async getCurrentUserProfile(@Req() request: AuthenticatedRequest) {
     return this.getCurrentUserProfileUseCase.execute(request.user.sub);
+  }
+
+  @Get("account")
+  public async getOwnAccount(@Req() request: AuthenticatedRequest) {
+    return this.getOwnAccountProfileUseCase.execute(request.user.sub);
+  }
+
+  @Patch("account")
+  public async updateOwnAccount(@Body() body: unknown, @Req() request: AuthenticatedRequest) {
+    const payload = typeof body === "object" && body !== null ? body : {};
+
+    return this.updateOwnProfileUseCase.execute(request.user.sub, {
+      name: String((payload as Record<string, unknown>).name ?? ""),
+      email: String((payload as Record<string, unknown>).email ?? ""),
+      currentPassword: String((payload as Record<string, unknown>).currentPassword ?? ""),
+    });
+  }
+
+  @Post("account/change-password")
+  public async changeOwnPassword(@Body() body: unknown, @Req() request: AuthenticatedRequest) {
+    const payload = typeof body === "object" && body !== null ? body : {};
+
+    return this.changeOwnPasswordUseCase.execute({
+      userId: request.user.sub,
+      currentSessionId: request.user.sessionId,
+      payload: {
+        currentPassword: String((payload as Record<string, unknown>).currentPassword ?? ""),
+        newPassword: String((payload as Record<string, unknown>).newPassword ?? ""),
+        confirmNewPassword: String((payload as Record<string, unknown>).confirmNewPassword ?? ""),
+      },
+    });
   }
 
   @Post("logout")

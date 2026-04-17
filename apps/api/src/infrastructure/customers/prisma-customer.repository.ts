@@ -15,6 +15,7 @@ type PrismaCustomerRecord = {
   email: string;
   phone: string;
   taxId: string | null;
+  ownerUserId: string;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -26,6 +27,7 @@ function mapPrismaCustomerToEntity(customer: PrismaCustomerRecord): CustomerEnti
     email: customer.email,
     phone: customer.phone,
     taxId: customer.taxId,
+    ownerUserId: customer.ownerUserId,
     createdAt: customer.createdAt.toISOString(),
     updatedAt: customer.updatedAt.toISOString(),
   };
@@ -42,6 +44,7 @@ export class PrismaCustomerRepository implements ICustomerRepository {
         email: input.email,
         phone: input.phone,
         taxId: input.taxId ?? null,
+        ownerUserId: input.ownerUserId,
       },
     });
 
@@ -63,6 +66,21 @@ export class PrismaCustomerRepository implements ICustomerRepository {
   public async findByEmail(email: string): Promise<CustomerEntity | null> {
     const customer = await this.prisma.customer.findUnique({
       where: { email },
+    });
+
+    if (customer === null) {
+      return null;
+    }
+
+    return mapPrismaCustomerToEntity(customer as PrismaCustomerRecord);
+  }
+
+  public async findOwnedById(id: string, ownerUserId: string): Promise<CustomerEntity | null> {
+    const customer = await this.prisma.customer.findFirst({
+      where: {
+        id,
+        ownerUserId,
+      },
     });
 
     if (customer === null) {

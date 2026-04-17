@@ -8,8 +8,9 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
+  Req,
 } from "@nestjs/common";
+import type { Request } from "express";
 import { CreateCustomerUseCase } from "../../application/customers/create-customer.use-case";
 import { DeleteCustomerUseCase } from "../../application/customers/delete-customer.use-case";
 import { GetCustomerUseCase } from "../../application/customers/get-customer.use-case";
@@ -20,12 +21,12 @@ import {
   listCustomersQuerySchema,
   updateCustomerSchema,
 } from "../../domain/customers/customer.schemas";
-import type {
-  CreateCustomerInput,
-  UpdateCustomerInput,
-} from "../../domain/customers/customer.types";
-import { Roles } from "../decorators/roles.decorator";
-import { RoleGuard } from "../guards/role.guard";
+import type { UpdateCustomerInput } from "../../domain/customers/customer.types";
+import type { AccessTokenPayload } from "../../domain/auth/auth.types";
+
+type AuthenticatedRequest = Request & {
+  user: AccessTokenPayload;
+};
 
 @Controller("customers")
 export class CustomersController {
@@ -38,16 +39,19 @@ export class CustomersController {
   ) {}
 
   @Post()
-  public async create(@Body() body: unknown) {
+  public async create(@Body() body: unknown, @Req() request: AuthenticatedRequest) {
     const validated = createCustomerSchema.parse(body);
-    const input: CreateCustomerInput = {
+    const input = {
       name: validated.name,
       email: validated.email,
       phone: validated.phone,
       taxId: validated.taxId,
     };
 
-    return this.createCustomerUseCase.execute(input);
+    return this.createCustomerUseCase.execute(input, {
+      actorUserId: request.user.sub,
+      actorRole: request.user.role,
+    });
   }
 
   @Get()
@@ -66,7 +70,11 @@ export class CustomersController {
   }
 
   @Patch(":id")
-  public async update(@Param("id") id: string, @Body() body: unknown) {
+  public async update(
+    @Param("id") id: string,
+    @Body() body: unknown,
+    @Req() request: AuthenticatedRequest,
+  ) {
     const validated = updateCustomerSchema.parse(body);
     const input: UpdateCustomerInput = {
       name: validated.name,
@@ -75,14 +83,18 @@ export class CustomersController {
       taxId: validated.taxId,
     };
 
-    return this.updateCustomerUseCase.execute(id, input);
+    return this.updateCustomerUseCase.execute(id, input, {
+      actorUserId: request.user.sub,
+      actorRole: request.user.role,
+    });
   }
 
   @Delete(":id")
-  @UseGuards(RoleGuard)
-  @Roles("ADMIN")
-  public async delete(@Param("id") id: string) {
-    await this.deleteCustomerUseCase.execute(id);
+  public async delete(@Param("id") id: string, @Req() request: AuthenticatedRequest) {
+    await this.deleteCustomerUseCase.execute(id, {
+      actorUserId: request.user.sub,
+      actorRole: request.user.role,
+    });
 
     return {
       statusCode: HttpStatus.OK,

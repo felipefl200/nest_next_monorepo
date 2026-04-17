@@ -1,27 +1,34 @@
 import {
-  Controller,
-  Get,
-  Post,
-  Patch,
-  Delete,
   Body,
-  Param,
-  Query,
-  UseGuards,
+  Controller,
+  Delete,
+  Get,
   HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
 } from "@nestjs/common";
-import { JwtAuthGuard } from "../guards/jwt-auth.guard";
+import type { Request } from "express";
 import { CreateProductUseCase } from "../../application/products/create-product.use-case";
+import { DeleteProductUseCase } from "../../application/products/delete-product.use-case";
 import { GetProductUseCase } from "../../application/products/get-product.use-case";
 import { ListProductsUseCase } from "../../application/products/list-products.use-case";
 import { UpdateProductUseCase } from "../../application/products/update-product.use-case";
-import { DeleteProductUseCase } from "../../application/products/delete-product.use-case";
+import type { AccessTokenPayload } from "../../domain/auth/auth.types";
 import {
   createProductSchema,
-  updateProductSchema,
   listProductsQuerySchema,
+  updateProductSchema,
 } from "../../domain/products/product.schemas";
-import type { CreateProductInput, UpdateProductInput } from "../../domain/products/product.types";
+import type { UpdateProductInput } from "../../domain/products/product.types";
+import { JwtAuthGuard } from "../guards/jwt-auth.guard";
+
+type AuthenticatedRequest = Request & {
+  user: AccessTokenPayload;
+};
 
 @Controller("products")
 @UseGuards(JwtAuthGuard)
@@ -35,9 +42,9 @@ export class ProductsController {
   ) {}
 
   @Post()
-  public async create(@Body() body: unknown) {
+  public async create(@Body() body: unknown, @Req() request: AuthenticatedRequest) {
     const validated = createProductSchema.parse(body);
-    const input: CreateProductInput = {
+    const input = {
       name: validated.name,
       description: validated.description,
       category: validated.category,
@@ -45,7 +52,11 @@ export class ProductsController {
       stock: validated.stock,
       isActive: validated.isActive,
     };
-    return this.createProductUseCase.execute(input);
+
+    return this.createProductUseCase.execute(input, {
+      actorUserId: request.user.sub,
+      actorRole: request.user.role,
+    });
   }
 
   @Get()
@@ -69,14 +80,24 @@ export class ProductsController {
   public async update(
     @Param("id") id: string,
     @Body() body: unknown,
+    @Req() request: AuthenticatedRequest,
   ) {
     const validated = updateProductSchema.parse(body);
-    return this.updateProductUseCase.execute(id, validated);
+    const input: UpdateProductInput = { ...validated };
+
+    return this.updateProductUseCase.execute(id, input, {
+      actorUserId: request.user.sub,
+      actorRole: request.user.role,
+    });
   }
 
   @Delete(":id")
-  public async delete(@Param("id") id: string) {
-    await this.deleteProductUseCase.execute(id);
+  public async delete(@Param("id") id: string, @Req() request: AuthenticatedRequest) {
+    await this.deleteProductUseCase.execute(id, {
+      actorUserId: request.user.sub,
+      actorRole: request.user.role,
+    });
+
     return {
       statusCode: HttpStatus.OK,
       message: "Product deleted successfully",

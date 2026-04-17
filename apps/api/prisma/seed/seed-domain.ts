@@ -21,6 +21,7 @@ type SeedCustomer = {
   email: string;
   phone: string;
   taxId: string | null;
+  ownerUserId: string;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -33,6 +34,7 @@ type SeedProduct = {
   price: string;
   stock: number;
   isActive: boolean;
+  ownerUserId: string;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -48,6 +50,7 @@ type SeedOrder = {
   id: string;
   number: string;
   customerId: string;
+  ownerUserId: string;
   status: OrderStatus;
   total: string;
   createdAt: Date;
@@ -179,7 +182,7 @@ function uniqueTaxId(used: Set<string>): string {
   }
 }
 
-function createCustomers(count: number): SeedCustomer[] {
+function createCustomers(count: number, ownerUserId: string): SeedCustomer[] {
   const taxIdRegistry = new Set<string>();
   const now = new Date();
   const customers: SeedCustomer[] = [];
@@ -197,6 +200,7 @@ function createCustomers(count: number): SeedCustomer[] {
         faker.number.int({ min: 1, max: 100 }) <= 85
           ? uniqueTaxId(taxIdRegistry)
           : null,
+      ownerUserId,
       createdAt,
       updatedAt: now,
     });
@@ -235,7 +239,7 @@ function randomProductName(category: string): string {
   return `${category} ${faker.helpers.arrayElement(adjectives)} ${faker.helpers.arrayElement(nouns)}`;
 }
 
-function createProducts(count: number): SeedProduct[] {
+function createProducts(count: number, ownerUserId: string): SeedProduct[] {
   const now = new Date();
   const products: SeedProduct[] = [];
 
@@ -255,6 +259,7 @@ function createProducts(count: number): SeedProduct[] {
       price: toMoney(rawPrice),
       stock: faker.number.int({ min: 0, max: 450 }),
       isActive: faker.number.int({ min: 1, max: 100 }) <= 92,
+      ownerUserId,
       createdAt: faker.date.past({ years: 1 }),
       updatedAt: now,
     });
@@ -291,6 +296,7 @@ function createOrdersAndItems(params: {
   orderCount: number;
   customers: SeedCustomer[];
   products: SeedProduct[];
+  ownerUserId: string;
 }): { orders: SeedOrder[]; orderItems: SeedOrderItem[] } {
   const now = new Date();
   const startDate = new Date(now);
@@ -353,6 +359,7 @@ function createOrdersAndItems(params: {
       id: orderId,
       number: orderNumber,
       customerId: customer.id,
+      ownerUserId: params.ownerUserId,
       status,
       total: toMoney(Number.parseFloat(total.toFixed(2))),
       createdAt,
@@ -392,13 +399,22 @@ async function main(): Promise<void> {
   try {
     await cleanupDomain(prisma);
 
-    const customers = createCustomers(50);
-    const products = createProducts(100);
+    const adminUser = await prisma.user.findUnique({
+      where: { email: "admin@ecommerce.local" },
+    });
+
+    if (adminUser === null) {
+      throw new Error("Admin seed user not found. Run auth seed before domain seed.");
+    }
+
+    const customers = createCustomers(50, adminUser.id);
+    const products = createProducts(100, adminUser.id);
     const settings = createSettings();
     const { orders, orderItems } = createOrdersAndItems({
       orderCount: env.DOMAIN_SEED_ORDER_COUNT,
       customers,
       products,
+      ownerUserId: adminUser.id,
     });
 
     await prisma.customer.createMany({ data: customers });

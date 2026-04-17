@@ -28,6 +28,7 @@ export type Order = {
   status: OrderStatus;
   total: string;
   items: OrderItem[];
+  ownerUserId: string;
   createdAt: string;
   updatedAt: string;
 };

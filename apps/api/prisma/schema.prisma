@@ -25,6 +25,9 @@ model User {
   role            Role            @relation(fields: [roleId], references: [id], onDelete: Restrict)
   credential      UserCredential?
   sessions        Session[]
+  ownedCustomers  Customer[]      @relation("UserOwnedCustomers")
+  ownedProducts   Product[]       @relation("UserOwnedProducts")
+  ownedOrders     Order[]         @relation("UserOwnedOrders")
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
@@ -75,14 +78,18 @@ enum OrderStatus {
 }
 
 model Customer {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  phone     String
-  taxId     String?  @unique
-  orders    Order[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid())
+  name        String
+  email       String   @unique
+  phone       String
+  taxId       String?  @unique
+  ownerUserId String
+  ownerUser   User     @relation("UserOwnedCustomers", fields: [ownerUserId], references: [id], onDelete: Restrict)
+  orders      Order[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([ownerUserId])
 }
 
 model Product {
@@ -93,26 +100,32 @@ model Product {
   price       Decimal     @db.Decimal(10, 2)
   stock       Int
   isActive    Boolean     @default(true)
+  ownerUserId String
+  ownerUser   User        @relation("UserOwnedProducts", fields: [ownerUserId], references: [id], onDelete: Restrict)
   orderItems  OrderItem[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
   @@index([category])
   @@index([isActive])
+  @@index([ownerUserId])
 }
 
 model Order {
-  id         String      @id @default(cuid())
-  number     String      @unique
-  customerId String
-  customer   Customer    @relation(fields: [customerId], references: [id], onDelete: Restrict)
-  status     OrderStatus @default(PENDING)
-  total      Decimal     @db.Decimal(10, 2)
-  items      OrderItem[]
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  id          String      @id @default(cuid())
+  number      String      @unique
+  customerId  String
+  customer    Customer    @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  ownerUserId String
+  ownerUser   User        @relation("UserOwnedOrders", fields: [ownerUserId], references: [id], onDelete: Restrict)
+  status      OrderStatus @default(PENDING)
+  total       Decimal     @db.Decimal(10, 2)
+  items       OrderItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
   @@index([customerId])
+  @@index([ownerUserId])
   @@index([status])
   @@index([createdAt])
 }

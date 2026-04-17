@@ -14,6 +14,7 @@ type PrismaRoleRecord = {
 
 type PrismaUserCredentialRecord = {
   passwordHash: string;
+  passwordChangedAt: Date | null;
 };
 
 type PrismaUserRecord = {
@@ -66,12 +67,12 @@ type PrismaUserDelegate = {
   }): Promise<PrismaUserRecord | null>;
   update(args: {
     where: { id: string };
-    data: {
-      tokenVersion: {
-        increment: number;
-      };
+    data: Record<string, unknown>;
+    include?: {
+      role: true;
+      credential: true;
     };
-  }): Promise<unknown>;
+  }): Promise<PrismaUserRecord>;
 };
 
 type PrismaSessionDelegate = {
@@ -96,7 +97,7 @@ type PrismaSessionDelegate = {
     };
   }): Promise<PrismaCreatedSessionRecord>;
   updateMany(args: {
-    where: { id?: string; userId?: string; revokedAt: null };
+    where: { id?: string; userId?: string; revokedAt: null; NOT?: { id: string } };
     data: {
       revokedAt: Date;
       lastUsedAt: Date;
@@ -124,6 +125,30 @@ export class PrismaAuthSessionRepository implements IAuthSessionRepository {
   public async findUserByEmail(email: string): Promise<AuthUser | null> {
     const user = await this.prisma.user.findUnique({
       where: { email },
+      include: {
+        role: true,
+        credential: true,
+      },
+    });
+
+    if (user === null) {
+      return null;
+    }
+
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      isActive: user.isActive,
+      tokenVersion: user.tokenVersion,
+      role: parseRole(user.role.name),
+      passwordHash: user.credential?.passwordHash ?? null,
+    };
+  }
+
+  public async findUserById(userId: string): Promise<AuthUser | null> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
       include: {
         role: true,
         credential: true,
@@ -256,6 +281,74 @@ export class PrismaAuthSessionRepository implements IAuthSessionRepository {
       data: {
         revokedAt: new Date(),
         lastUsedAt: new Date(),
+      },
+    });
+  }
+
+  public async revokeOtherSessionsByUserId(input: {
+    userId: string;
+    currentSessionId: string;
+  }): Promise<void> {
+    await this.prisma.session.updateMany({
+      where: {
+        userId: input.userId,
+        revokedAt: null,
+        NOT: {
+          id: input.currentSessionId,
+        },
+      },
+      data: {
+        revokedAt: new Date(),
+        lastUsedAt: new Date(),
+      },
+    });
+  }
+
+  public async updateCurrentUserProfile(input: {
+    userId: string;
+    name: string;
+    email: string;
+  }): Promise<Omit<AuthUser, "passwordHash">> {
+    const user = await this.prisma.user.update({
+      where: { id: input.userId },
+      data: {
+        name: input.name,
+        email: input.email,
+      },
+      include: {
+        role: true,
+        credential: true,
+      },
+    });
+
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      isActive: user.isActive,
+      tokenVersion: user.tokenVersion,
+      role: parseRole(user.role.name),
+    };
+  }
+
+  public async updateCurrentUserPassword(input: {
+    userId: string;
+    passwordHash: string;
+    passwordChangedAt: Date;
+  }): Promise<void> {
+    await this.prisma.user.update({
+      where: { id: input.userId },
+      data: {
+        credential: {
+          update: {
+            passwordHash: input.passwordHash,
+            passwordChangedAt: input.passwordChangedAt,
+          },
+        },
+      },
+      include: {
+        role: true,
+        credential: true,
       },
     });
   }

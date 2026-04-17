@@ -15,6 +15,7 @@ type PrismaOrderWithRelations = {
   id: string;
   number: string;
   customerId: string;
+  ownerUserId: string;
   customer: {
     name: string;
   };
@@ -39,6 +40,7 @@ function mapPrismaOrderToEntity(order: PrismaOrderWithRelations): OrderEntity {
     number: order.number,
     customerId: order.customerId,
     customerName: order.customer.name,
+    ownerUserId: order.ownerUserId,
     status: order.status,
     total: order.total.toString(),
     items: order.items.map(
@@ -70,6 +72,7 @@ export class PrismaOrderRepository implements IOrderRepository {
       data: {
         number: orderNumber,
         customerId: input.customerId,
+        ownerUserId: input.ownerUserId,
         status: "PENDING",
         total,
         items: {
@@ -123,6 +126,34 @@ export class PrismaOrderRepository implements IOrderRepository {
     });
 
     if (!order) {
+      return null;
+    }
+
+    return mapPrismaOrderToEntity(order as unknown as PrismaOrderWithRelations);
+  }
+
+  public async findOwnedById(id: string, ownerUserId: string): Promise<OrderEntity | null> {
+    const order = await this.prisma.order.findFirst({
+      where: { id, ownerUserId },
+      include: {
+        customer: {
+          select: {
+            name: true,
+          },
+        },
+        items: {
+          include: {
+            product: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (order === null) {
       return null;
     }
 

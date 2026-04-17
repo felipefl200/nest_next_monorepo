@@ -1,6 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { CUSTOMER_REPOSITORY } from "../../domain/tokens";
 import { ConflictException } from "../../domain/exceptions/conflict.exception";
+import type { ActorContext } from "../../domain/shared/actor.types";
 import type {
   CreateCustomerInput,
   CustomerEntity,
@@ -16,7 +17,10 @@ export class CreateCustomerUseCase {
     private readonly customerRepository: ICustomerRepository,
   ) {}
 
-  public async execute(input: CreateCustomerInput): Promise<CreateCustomerResult> {
+  public async execute(
+    input: Omit<CreateCustomerInput, "ownerUserId">,
+    actor: ActorContext,
+  ): Promise<CreateCustomerResult> {
     const existing = await this.customerRepository.findByEmail(input.email);
 
     if (existing !== null) {
@@ -31,6 +35,9 @@ export class CreateCustomerUseCase {
       }
     }
 
-    return this.customerRepository.create(input);
+    return this.customerRepository.create({
+      ...input,
+      ownerUserId: actor.actorUserId,
+    });
   }
 }

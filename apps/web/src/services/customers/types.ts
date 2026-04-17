@@ -6,6 +6,7 @@ export type Customer = {
   email: string;
   phone: string;
   taxId: string | null;
+  ownerUserId: string;
   createdAt: string;
   updatedAt: string;
 };

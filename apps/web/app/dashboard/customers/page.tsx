@@ -35,6 +35,7 @@ import {
   PaginationSummary,
 } from "@repo/ui/components/pagination";
 import { DeleteCustomerButton } from "@/components/customers/delete-customer-button";
+import { getCurrentUserProfile } from "@/src/services/auth/session";
 import { listCustomers } from "@/src/services/customers/bff";
 import { formatDate } from "@/src/services/shared/formatters";
 import {
@@ -49,6 +50,7 @@ type CustomersPageProps = {
 
 export default async function CustomersPage({ searchParams }: CustomersPageProps) {
   const resolvedSearchParams = await searchParams;
+  const profile = await getCurrentUserProfile("/dashboard");
   const page = getNumberSearchParam(resolvedSearchParams.page, 1);
   const perPage = getNumberSearchParam(resolvedSearchParams.perPage, 20);
   const search = getSingleSearchParam(resolvedSearchParams.search);
@@ -148,13 +150,17 @@ export default async function CustomersPage({ searchParams }: CustomersPageProps
                         >
                           Detalhe
                         </Link>
-                        <Link
-                          href={`/dashboard/customers/${customer.id}/edit`}
-                          className={buttonVariants({ variant: "ghost", size: "sm" })}
-                        >
-                          Editar
-                        </Link>
-                        <DeleteCustomerButton customerId={customer.id} />
+                        {(profile.role === "ADMIN" || profile.id === customer.ownerUserId) && (
+                          <>
+                            <Link
+                              href={`/dashboard/customers/${customer.id}/edit`}
+                              className={buttonVariants({ variant: "ghost", size: "sm" })}
+                            >
+                              Editar
+                            </Link>
+                            <DeleteCustomerButton customerId={customer.id} />
+                          </>
+                        )}
                       </div>
                     </DataTableCell>
                   </DataTableRow>

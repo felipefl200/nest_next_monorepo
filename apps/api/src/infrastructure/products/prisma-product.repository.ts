@@ -17,6 +17,7 @@ type PrismaProductRecord = {
   price: number;
   stock: number;
   isActive: boolean;
+  ownerUserId: string;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -30,6 +31,7 @@ function mapPrismaProductToEntity(product: PrismaProductRecord): ProductEntity {
     price: product.price.toString(),
     stock: product.stock,
     isActive: product.isActive,
+    ownerUserId: product.ownerUserId,
     createdAt: product.createdAt.toISOString(),
     updatedAt: product.updatedAt.toISOString(),
   };
@@ -48,6 +50,7 @@ export class PrismaProductRepository implements IProductRepository {
         price: Number.parseFloat(input.price),
         stock: input.stock,
         isActive: input.isActive ?? true,
+        ownerUserId: input.ownerUserId,
       },
     });
 
@@ -80,6 +83,21 @@ export class PrismaProductRepository implements IProductRepository {
     });
 
     return (products as PrismaProductRecord[]).map(mapPrismaProductToEntity);
+  }
+
+  public async findOwnedById(id: string, ownerUserId: string): Promise<ProductEntity | null> {
+    const product = await this.prisma.product.findFirst({
+      where: {
+        id,
+        ownerUserId,
+      },
+    });
+
+    if (product === null) {
+      return null;
+    }
+
+    return mapPrismaProductToEntity(product as PrismaProductRecord);
   }
 
   public async list(query: ListProductsQuery): Promise<PaginatedResult<ProductEntity>> {

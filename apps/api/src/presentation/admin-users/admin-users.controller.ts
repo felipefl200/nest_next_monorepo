@@ -53,9 +53,13 @@ export class AdminUsersController {
   }
 
   @Patch(":id")
-  public async update(@Param("id") id: string, @Body() body: unknown) {
+  public async update(@Param("id") id: string, @Body() body: unknown, @Req() request: AuthenticatedRequest) {
     const validated = updateManagedUserSchema.parse(body);
-    return this.updateManagedUserUseCase.execute(id, validated);
+    return this.updateManagedUserUseCase.execute({
+      actorUserId: request.user.sub,
+      targetUserId: id,
+      updates: validated,
+    });
   }
 
   @Delete(":id")

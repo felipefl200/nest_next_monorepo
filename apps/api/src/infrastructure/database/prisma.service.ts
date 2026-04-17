@@ -21,6 +21,7 @@ type PrismaOrderRecord = {
   id: string;
   number: string;
   customerId: string;
+  ownerUserId: string;
   customer: { name: string };
   status: string;
   total: number;
@@ -37,6 +38,7 @@ type PrismaProductRecord = {
   price: number;
   stock: number;
   isActive: boolean;
+  ownerUserId: string;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -75,6 +77,7 @@ type PrismaDomainClient = {
       email: string;
       phone: string;
       taxId: string | null;
+      ownerUserId: string;
       createdAt: Date;
       updatedAt: Date;
     }>;
@@ -84,6 +87,19 @@ type PrismaDomainClient = {
       email: string;
       phone: string;
       taxId: string | null;
+      ownerUserId: string;
+      createdAt: Date;
+      updatedAt: Date;
+    } | null>;
+    findFirst(args: {
+      where?: Record<string, unknown>;
+    }): Promise<{
+      id: string;
+      name: string;
+      email: string;
+      phone: string;
+      taxId: string | null;
+      ownerUserId: string;
       createdAt: Date;
       updatedAt: Date;
     } | null>;
@@ -99,6 +115,7 @@ type PrismaDomainClient = {
         email: string;
         phone: string;
         taxId: string | null;
+        ownerUserId: string;
         createdAt: Date;
         updatedAt: Date;
       }[]
@@ -112,6 +129,7 @@ type PrismaDomainClient = {
       email: string;
       phone: string;
       taxId: string | null;
+      ownerUserId: string;
       createdAt: Date;
       updatedAt: Date;
     }>;
@@ -124,6 +142,9 @@ type PrismaDomainClient = {
     }): Promise<PrismaProductRecord>;
     findUnique(args: {
       where: { id?: string };
+    }): Promise<PrismaProductRecord | null>;
+    findFirst(args: {
+      where?: Record<string, unknown>;
     }): Promise<PrismaProductRecord | null>;
     findMany(args: {
       where?: Record<string, unknown>;
@@ -171,6 +192,10 @@ type PrismaDomainClient = {
     }): Promise<PrismaOrderRecord>;
     findUnique(args: {
       where: { id?: string; number?: string };
+      include?: Record<string, boolean | PrismaIncludeWithSelect>;
+    }): Promise<PrismaOrderRecord | null>;
+    findFirst(args: {
+      where?: Record<string, unknown>;
       include?: Record<string, boolean | PrismaIncludeWithSelect>;
     }): Promise<PrismaOrderRecord | null>;
     findMany(args: {

@@ -27,6 +27,7 @@ export type OrderEntity = {
   number: string;
   customerId: string;
   customerName: string;
+  ownerUserId: string;
   status: OrderStatus;
   total: string;
   items: OrderItemData[];
@@ -35,6 +36,7 @@ export type OrderEntity = {
 };
 
 export type CreateOrderInput = {
+  ownerUserId: string;
   customerId: string;
   items: OrderItemInput[];
 };
@@ -53,6 +55,7 @@ export type ListOrdersQuery = PaginationQuery & {
 export interface IOrderRepository {
   create(input: CreateOrderInput): Promise<OrderEntity>;
   findById(id: string): Promise<OrderEntity | null>;
+  findOwnedById(id: string, ownerUserId: string): Promise<OrderEntity | null>;
   findByNumber(number: string): Promise<OrderEntity | null>;
   list(query: ListOrdersQuery): Promise<PaginatedResult<OrderEntity>>;
   update(id: string, input: UpdateOrderInput): Promise<OrderEntity>;

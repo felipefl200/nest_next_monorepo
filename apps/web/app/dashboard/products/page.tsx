@@ -37,6 +37,7 @@ import {
 import { Select } from "@repo/ui/components/select";
 import { StatusBadge } from "@repo/ui/components/status-badge";
 import { DeleteProductButton } from "@/components/products/delete-product-button";
+import { getCurrentUserProfile } from "@/src/services/auth/session";
 import { listProducts } from "@/src/services/products/bff";
 import { formatCurrency, formatDate } from "@/src/services/shared/formatters";
 import {
@@ -51,6 +52,7 @@ type ProductsPageProps = {
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
   const resolvedSearchParams = await searchParams;
+  const profile = await getCurrentUserProfile("/dashboard");
   const page = getNumberSearchParam(resolvedSearchParams.page, 1);
   const perPage = getNumberSearchParam(resolvedSearchParams.perPage, 20);
   const search = getSingleSearchParam(resolvedSearchParams.search);
@@ -171,13 +173,17 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                         >
                           Detalhe
                         </Link>
-                        <Link
-                          href={`/dashboard/products/${product.id}/edit`}
-                          className={buttonVariants({ variant: "ghost", size: "sm" })}
-                        >
-                          Editar
-                        </Link>
-                        <DeleteProductButton productId={product.id} />
+                        {(profile.role === "ADMIN" || profile.id === product.ownerUserId) && (
+                          <>
+                            <Link
+                              href={`/dashboard/products/${product.id}/edit`}
+                              className={buttonVariants({ variant: "ghost", size: "sm" })}
+                            >
+                              Editar
+                            </Link>
+                            <DeleteProductButton productId={product.id} />
+                          </>
+                        )}
                       </div>
                     </DataTableCell>
                   </DataTableRow>

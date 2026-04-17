@@ -10,11 +10,13 @@ export type ProductEntity = {
   price: string;
   stock: number;
   isActive: boolean;
+  ownerUserId: string;
   createdAt: string;
   updatedAt: string;
 };
 
 export type CreateProductInput = {
+  ownerUserId: string;
   name: string;
   description?: string;
   category: string;
@@ -41,6 +43,7 @@ export type ListProductsQuery = PaginationQuery & {
 export interface IProductRepository {
   create(input: CreateProductInput): Promise<ProductEntity>;
   findById(id: string): Promise<ProductEntity | null>;
+  findOwnedById(id: string, ownerUserId: string): Promise<ProductEntity | null>;
   findManyByIds(ids: string[]): Promise<ProductEntity[]>;
   list(query: ListProductsQuery): Promise<PaginatedResult<ProductEntity>>;
   update(id: string, input: UpdateProductInput): Promise<ProductEntity>;

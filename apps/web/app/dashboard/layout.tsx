@@ -25,7 +25,7 @@ export default async function DashboardLayout({
                 </p>
               </div>
 
-              <DashboardNav />
+              <DashboardNav role={profile.role} />
             </div>
 
             <LogoutButton />

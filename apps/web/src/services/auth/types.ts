@@ -12,6 +12,22 @@ export type CurrentUserProfile = {
   role: "ADMIN" | "MANAGER";
 };
 
+export type AccountProfile = CurrentUserProfile & {
+  isActive: boolean;
+};
+
+export type UpdateOwnProfileInput = {
+  name: string;
+  email: string;
+  currentPassword: string;
+};
+
+export type ChangeOwnPasswordInput = {
+  currentPassword: string;
+  newPassword: string;
+  confirmNewPassword: string;
+};
+
 export type LoginInput = {
   email: string;
   password: string;

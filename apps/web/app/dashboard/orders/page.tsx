@@ -36,6 +36,7 @@ import {
 import { Select } from "@repo/ui/components/select";
 import { StatusBadge } from "@repo/ui/components/status-badge";
 import { DeleteOrderButton } from "@/components/orders/delete-order-button";
+import { getCurrentUserProfile } from "@/src/services/auth/session";
 import { listCustomers } from "@/src/services/customers/bff";
 import { listOrders } from "@/src/services/orders/bff";
 import { formatCurrency, formatDate } from "@/src/services/shared/formatters";
@@ -66,6 +67,7 @@ function getOrderStatusVariant(status: string): "warning" | "success" | "danger"
 
 export default async function OrdersPage({ searchParams }: OrdersPageProps) {
   const resolvedSearchParams = await searchParams;
+  const profile = await getCurrentUserProfile("/dashboard");
   const page = getNumberSearchParam(resolvedSearchParams.page, 1);
   const perPage = getNumberSearchParam(resolvedSearchParams.perPage, 20);
   const status = getSingleSearchParam(resolvedSearchParams.status) as
@@ -175,13 +177,17 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
                         >
                           Detalhe
                         </Link>
-                        <Link
-                          href={`/dashboard/orders/${order.id}/edit`}
-                          className={buttonVariants({ variant: "ghost", size: "sm" })}
-                        >
-                          Editar
-                        </Link>
-                        <DeleteOrderButton orderId={order.id} />
+                        {(profile.role === "ADMIN" || profile.id === order.ownerUserId) && (
+                          <>
+                            <Link
+                              href={`/dashboard/orders/${order.id}/edit`}
+                              className={buttonVariants({ variant: "ghost", size: "sm" })}
+                            >
+                              Editar
+                            </Link>
+                            <DeleteOrderButton orderId={order.id} />
+                          </>
+                        )}
                       </div>
                     </DataTableCell>
                   </DataTableRow>

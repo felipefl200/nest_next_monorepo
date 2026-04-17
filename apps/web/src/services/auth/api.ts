@@ -1,11 +1,14 @@
 import type {
+  AccountProfile,
   AuthApiError,
   AuthTokensResponse,
+  ChangeOwnPasswordInput,
   CurrentUserProfile,
   LoginInput,
+  UpdateOwnProfileInput,
 } from "./types";
 
-type HttpMethod = "GET" | "POST";
+type HttpMethod = "GET" | "POST" | "PATCH";
 
 function getApiBaseUrl(): string {
   const apiUrl = process.env.API_URL ?? "http://localhost:3333";
@@ -125,6 +128,54 @@ export async function getCurrentUserProfileWithApi(
   accessToken: string,
 ): Promise<CurrentUserProfile> {
   return getJson<CurrentUserProfile>("/auth/me", {
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+    },
+  });
+}
+
+export async function getOwnAccountProfileWithApi(
+  accessToken: string,
+): Promise<AccountProfile> {
+  return getJson<AccountProfile>("/auth/account", {
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+    },
+  });
+}
+
+export async function updateOwnAccountProfileWithApi(
+  accessToken: string,
+  input: UpdateOwnProfileInput,
+): Promise<AccountProfile> {
+  let response: Response;
+
+  try {
+    response = await fetch(`${getApiBaseUrl()}/auth/account`, {
+      method: "PATCH" satisfies HttpMethod,
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(input),
+      cache: "no-store",
+    });
+  } catch {
+    throw createNetworkError();
+  }
+
+  if (!response.ok) {
+    throw await parseApiError(response);
+  }
+
+  return (await response.json()) as AccountProfile;
+}
+
+export async function changeOwnPasswordWithApi(
+  accessToken: string,
+  input: ChangeOwnPasswordInput,
+): Promise<{ success: true }> {
+  return postJson<{ success: true }>("/auth/account/change-password", input, {
     headers: {
       authorization: `Bearer ${accessToken}`,
     },

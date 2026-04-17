@@ -1,6 +1,7 @@
 import { Injectable, Inject } from "@nestjs/common";
 import { CUSTOMER_REPOSITORY, ORDER_REPOSITORY, PRODUCT_REPOSITORY } from "../../domain/tokens";
 import { NotFoundException } from "../../domain/exceptions/not-found.exception";
+import type { ActorContext } from "../../domain/shared/actor.types";
 import type {
   ICustomerRepository,
 } from "../../domain/customers/customer.types";
@@ -24,7 +25,10 @@ export class CreateOrderUseCase {
     private readonly productRepository: IProductRepository,
   ) {}
 
-  public async execute(input: CreateOrderInput): Promise<CreateOrderResult> {
+  public async execute(
+    input: Omit<CreateOrderInput, "ownerUserId">,
+    actor: ActorContext,
+  ): Promise<CreateOrderResult> {
     const customer = await this.customerRepository.findById(input.customerId);
 
     if (customer === null) {
@@ -42,6 +46,9 @@ export class CreateOrderUseCase {
       throw new NotFoundException("PRODUCT_NOT_FOUND", `Product not found: ${missingProductId}`);
     }
 
-    return this.orderRepository.create(input);
+    return this.orderRepository.create({
+      ...input,
+      ownerUserId: actor.actorUserId,
+    });
   }
 }

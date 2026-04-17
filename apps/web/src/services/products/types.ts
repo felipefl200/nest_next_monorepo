@@ -8,6 +8,7 @@ export type Product = {
   price: string;
   stock: number;
   isActive: boolean;
+  ownerUserId: string;
   createdAt: string;
   updatedAt: string;
 };
