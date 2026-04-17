@@ -5,9 +5,9 @@ import type {
   CreateProductInput,
   ProductEntity,
   ListProductsQuery,
-  PaginatedResult,
   UpdateProductInput,
 } from "../../domain/products/product.types";
+import type { PaginatedResult } from "../../domain/shared/pagination.types";
 
 type PrismaProductRecord = {
   id: string;
@@ -66,8 +66,24 @@ export class PrismaProductRepository implements IProductRepository {
     return mapPrismaProductToEntity(product as PrismaProductRecord);
   }
 
+  public async findManyByIds(ids: string[]): Promise<ProductEntity[]> {
+    if (ids.length === 0) {
+      return [];
+    }
+
+    const products = await this.prisma.product.findMany({
+      where: {
+        id: {
+          in: [...new Set(ids)],
+        },
+      },
+    });
+
+    return (products as PrismaProductRecord[]).map(mapPrismaProductToEntity);
+  }
+
   public async list(query: ListProductsQuery): Promise<PaginatedResult<ProductEntity>> {
-    const { page, perPage, category, isActive } = query;
+    const { page, perPage, category, isActive, search } = query;
     const skip = (page - 1) * perPage;
 
     const where: Record<string, unknown> = {};
@@ -76,6 +92,22 @@ export class PrismaProductRepository implements IProductRepository {
     }
     if (isActive !== undefined) {
       where.isActive = isActive;
+    }
+    if (search !== undefined) {
+      where.OR = [
+        {
+          name: {
+            contains: search,
+            mode: "insensitive",
+          },
+        },
+        {
+          category: {
+            contains: search,
+            mode: "insensitive",
+          },
+        },
+      ];
     }
 
     const [products, total] = await Promise.all([
@@ -137,6 +169,12 @@ export class PrismaProductRepository implements IProductRepository {
   public async delete(id: string): Promise<void> {
     await this.prisma.product.delete({
       where: { id },
+    });
+  }
+
+  public async countOrderItemsByProductId(productId: string): Promise<number> {
+    return this.prisma.orderItem.count({
+      where: { productId },
     });
   }
 }

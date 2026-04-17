@@ -31,6 +31,18 @@ export class UpdateCustomerUseCase {
       }
     }
 
+    if (
+      input.taxId !== undefined &&
+      input.taxId !== null &&
+      input.taxId !== customer.taxId
+    ) {
+      const existing = await this.customerRepository.findByTaxId(input.taxId);
+
+      if (existing !== null) {
+        throw new ConflictException("CUSTOMER_TAX_ID_ALREADY_EXISTS", "Customer tax ID already exists");
+      }
+    }
+
     return this.customerRepository.update(id, input);
   }
 }

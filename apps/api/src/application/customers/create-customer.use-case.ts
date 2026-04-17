@@ -23,6 +23,14 @@ export class CreateCustomerUseCase {
       throw new ConflictException("CUSTOMER_EMAIL_ALREADY_EXISTS", "Customer email already exists");
     }
 
+    if (input.taxId !== undefined) {
+      const customerWithTaxId = await this.customerRepository.findByTaxId(input.taxId);
+
+      if (customerWithTaxId !== null) {
+        throw new ConflictException("CUSTOMER_TAX_ID_ALREADY_EXISTS", "Customer tax ID already exists");
+      }
+    }
+
     return this.customerRepository.create(input);
   }
 }

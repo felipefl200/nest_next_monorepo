@@ -21,8 +21,9 @@ export const updateProductSchema = z.object({
 export const listProductsQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   perPage: z.coerce.number().int().min(1).max(100).default(20),
-  category: z.string().optional(),
+  category: z.string().trim().min(1).optional(),
   isActive: z.coerce.boolean().optional(),
+  search: z.string().trim().min(1).optional(),
 });
 
 export type CreateProductDto = z.infer<typeof createProductSchema>;

@@ -14,6 +14,7 @@ function createMockRepository(): IOrderRepository {
     items: [
       {
         productId: "product-1",
+        productName: "Product 1",
         quantity: 2,
         unitPrice: "50.00",
       },
@@ -33,7 +34,7 @@ function createMockRepository(): IOrderRepository {
       perPage: 20,
       totalPages: 0,
     })),
-    updateStatus: vi.fn(async () => mockOrder),
+    update: vi.fn(async () => mockOrder),
     delete: vi.fn(async () => undefined),
     generateNextOrderNumber: vi.fn(async () => "ORD-2026-0001"),
   };

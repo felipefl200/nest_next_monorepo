@@ -5,7 +5,6 @@ import type {
   ListOrdersQuery,
   OrderEntity,
   PaginatedResult,
-  OrderStatus,
 } from "../../domain/orders/order.types";
 
 function createMockRepository(): IOrderRepository {
@@ -44,14 +43,14 @@ function createMockRepository(): IOrderRepository {
 
   const firstOrder = mockOrders[0]!;
   const mockCreate = vi.fn(async (_input): Promise<OrderEntity> => firstOrder);
-  const mockUpdateStatus = vi.fn(async (_id: string, _status: OrderStatus): Promise<OrderEntity> => firstOrder);
+  const mockUpdate = vi.fn(async (_id: string): Promise<OrderEntity> => firstOrder);
 
   return {
     create: mockCreate,
     findById: vi.fn(async () => null),
     findByNumber: vi.fn(async () => null),
     list: vi.fn(async () => mockResult),
-    updateStatus: mockUpdateStatus,
+    update: mockUpdate,
     delete: vi.fn(async () => undefined),
     generateNextOrderNumber: vi.fn(async () => "ORD-2026-0001"),
   };
@@ -129,7 +128,7 @@ describe("ListOrdersUseCase", () => {
         perPage: 20,
         totalPages: 0,
       })),
-      updateStatus: vi.fn(async () => {
+      update: vi.fn(async () => {
         throw new Error("Not implemented");
       }),
       delete: vi.fn(async () => undefined),

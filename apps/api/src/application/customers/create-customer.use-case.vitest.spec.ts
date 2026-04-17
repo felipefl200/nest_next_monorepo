@@ -27,6 +27,7 @@ function createMockRepository(): ICustomerRepository {
     create: vi.fn(async (input: CreateCustomerInput) => createCustomerEntity("customer-1", input.email)),
     findById: vi.fn(async () => null),
     findByEmail: vi.fn(async () => null),
+    findByTaxId: vi.fn(async () => null),
     list: vi.fn(async (_query: ListCustomersQuery): Promise<PaginatedResult<CustomerEntity>> => ({
       data: [],
       total: 0,
@@ -77,5 +78,20 @@ describe("CreateCustomerUseCase", () => {
     ).rejects.toThrow(ConflictException);
 
     expect(repository.create).not.toHaveBeenCalled();
+  });
+
+  it("throws conflict when taxId already exists", async () => {
+    vi.mocked(repository.findByTaxId).mockResolvedValue(createCustomerEntity("customer-2"));
+
+    const useCase = new CreateCustomerUseCase(repository);
+
+    await expect(
+      useCase.execute({
+        name: "John",
+        email: "another@example.com",
+        phone: "+55 11 99999-9999",
+        taxId: "12345678900",
+      }),
+    ).rejects.toThrow(ConflictException);
   });
 });

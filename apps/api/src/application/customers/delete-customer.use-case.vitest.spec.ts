@@ -28,6 +28,7 @@ function createMockRepository(): ICustomerRepository {
     create: vi.fn(async (_input: CreateCustomerInput) => createCustomerEntity()),
     findById: vi.fn(async () => null),
     findByEmail: vi.fn(async () => null),
+    findByTaxId: vi.fn(async () => null),
     list: vi.fn(async (_query: ListCustomersQuery): Promise<PaginatedResult<CustomerEntity>> => ({
       data: [],
       total: 0,

@@ -10,6 +10,7 @@ type PrismaOrderItemRecord = {
   id: string;
   productId: string;
   orderId: string;
+  product?: { name: string };
   quantity: number;
   unitPrice: number;
   createdAt: Date;
@@ -42,6 +43,7 @@ type PrismaProductRecord = {
 
 type PrismaIncludeWithSelect = {
   select?: Record<string, boolean>;
+  include?: Record<string, boolean | PrismaIncludeWithSelect>;
 };
 
 type PrismaDomainClient = {
@@ -76,7 +78,7 @@ type PrismaDomainClient = {
       createdAt: Date;
       updatedAt: Date;
     }>;
-    findUnique(args: { where: { id?: string; email?: string } }): Promise<{
+    findUnique(args: { where: { id?: string; email?: string; taxId?: string } }): Promise<{
       id: string;
       name: string;
       email: string;
@@ -186,7 +188,10 @@ type PrismaDomainClient = {
     delete(args: { where: { id: string } }): Promise<void>;
     count(args?: { where?: Record<string, unknown> }): Promise<number>;
   };
-  orderItem: Record<string, never>;
+  orderItem: {
+    count(args?: { where?: Record<string, unknown> }): Promise<number>;
+    deleteMany(args?: { where?: Record<string, unknown> }): Promise<{ count: number }>;
+  };
 };
 
 type PrismaCoreClient = PrismaAuthSessionClient &
@@ -195,6 +200,7 @@ type PrismaCoreClient = PrismaAuthSessionClient &
     $connect(): Promise<void>;
     $disconnect(): Promise<void>;
     $queryRaw<T>(query: TemplateStringsArray, ...values: unknown[]): Promise<T>;
+    $transaction<T>(callback: (transaction: PrismaCoreClient) => Promise<T>): Promise<T>;
   };
 
 type PrismaServiceInit = {
@@ -244,6 +250,12 @@ export class PrismaService
 
   public $queryRaw<T>(query: TemplateStringsArray, ...values: unknown[]): Promise<T> {
     return this.client.$queryRaw<T>(query, ...values);
+  }
+
+  public $transaction<T>(
+    callback: (transaction: PrismaCoreClient) => Promise<T>,
+  ): Promise<T> {
+    return this.client.$transaction<T>(callback);
   }
 
   public get customer(): PrismaDomainClient["customer"] {

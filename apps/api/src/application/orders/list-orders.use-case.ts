@@ -4,8 +4,8 @@ import type {
   IOrderRepository,
   ListOrdersQuery,
   OrderEntity,
-  PaginatedResult,
 } from "../../domain/orders/order.types";
+import type { PaginatedResult } from "../../domain/shared/pagination.types";
 
 export type ListOrdersResult = PaginatedResult<OrderEntity>;
 

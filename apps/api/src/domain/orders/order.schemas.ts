@@ -11,7 +11,7 @@ export const orderStatusSchema = z.enum([
 
 export const createOrderItemSchema = z.object({
   productId: z.string().min(1, "Product ID is required"),
-  quantity: z.number().int().min(1, "Quantity must be at least 1"),
+  quantity: z.coerce.number().int().min(1, "Quantity must be at least 1"),
   unitPrice: z.string().regex(/^\d+(\.\d{1,2})?$/, "Invalid price format"),
 });
 
@@ -23,8 +23,11 @@ export const createOrderSchema = z.object({
 });
 
 export const updateOrderSchema = z.object({
-  id: z.string().min(1, "Order ID is required"),
+  customerId: z.string().min(1, "Customer ID is required"),
   status: orderStatusSchema,
+  items: z
+    .array(createOrderItemSchema)
+    .min(1, "Order must have at least one item"),
 });
 
 export const listOrdersQuerySchema = z.object({

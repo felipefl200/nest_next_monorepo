@@ -1,3 +1,7 @@
+import type { PaginatedResult } from "../shared/pagination.types";
+import type { PaginationQuery } from "../shared/query.types";
+export type { PaginatedResult } from "../shared/pagination.types";
+
 export type OrderStatus =
   | "PENDING"
   | "CONFIRMED"
@@ -6,6 +10,13 @@ export type OrderStatus =
   | "CANCELED";
 
 export type OrderItemData = {
+  productId: string;
+  productName: string;
+  quantity: number;
+  unitPrice: string;
+};
+
+export type OrderItemInput = {
   productId: string;
   quantity: number;
   unitPrice: string;
@@ -25,31 +36,18 @@ export type OrderEntity = {
 
 export type CreateOrderInput = {
   customerId: string;
-  items: {
-    productId: string;
-    quantity: number;
-    unitPrice: string;
-  }[];
+  items: OrderItemInput[];
 };
 
 export type UpdateOrderInput = {
-  id: string;
+  customerId: string;
   status: OrderStatus;
+  items: OrderItemInput[];
 };
 
-export type ListOrdersQuery = {
-  page: number;
-  perPage: number;
+export type ListOrdersQuery = PaginationQuery & {
   status?: OrderStatus;
   customerId?: string;
-};
-
-export type PaginatedResult<T> = {
-  data: T[];
-  total: number;
-  page: number;
-  perPage: number;
-  totalPages: number;
 };
 
 export interface IOrderRepository {
@@ -57,7 +55,7 @@ export interface IOrderRepository {
   findById(id: string): Promise<OrderEntity | null>;
   findByNumber(number: string): Promise<OrderEntity | null>;
   list(query: ListOrdersQuery): Promise<PaginatedResult<OrderEntity>>;
-  updateStatus(id: string, status: OrderStatus): Promise<OrderEntity>;
+  update(id: string, input: UpdateOrderInput): Promise<OrderEntity>;
   delete(id: string): Promise<void>;
   generateNextOrderNumber(): Promise<string>;
 }

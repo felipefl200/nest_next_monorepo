@@ -48,9 +48,11 @@ function createMockRepository(): IProductRepository {
   return {
     create: mockCreate,
     findById: vi.fn(async () => null),
+    findManyByIds: vi.fn(async () => mockProducts),
     list: vi.fn(async () => mockResult),
     update: mockUpdate,
     delete: vi.fn(async () => undefined),
+    countOrderItemsByProductId: vi.fn(async () => 0),
   };
 }
 
@@ -118,6 +120,7 @@ describe("ListProductsUseCase", () => {
         throw new Error("Not implemented");
       }),
       findById: vi.fn(async () => null),
+      findManyByIds: vi.fn(async () => []),
       list: vi.fn(async () => ({
         data: [],
         total: 0,
@@ -129,6 +132,7 @@ describe("ListProductsUseCase", () => {
         throw new Error("Not implemented");
       }),
       delete: vi.fn(async () => undefined),
+      countOrderItemsByProductId: vi.fn(async () => 0),
     };
 
     const useCase = new ListProductsUseCase(emptyRepo);

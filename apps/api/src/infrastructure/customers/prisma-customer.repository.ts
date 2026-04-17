@@ -5,9 +5,9 @@ import type {
   CustomerEntity,
   ICustomerRepository,
   ListCustomersQuery,
-  PaginatedResult,
   UpdateCustomerInput,
 } from "../../domain/customers/customer.types";
+import type { PaginatedResult } from "../../domain/shared/pagination.types";
 
 type PrismaCustomerRecord = {
   id: string;
@@ -63,6 +63,18 @@ export class PrismaCustomerRepository implements ICustomerRepository {
   public async findByEmail(email: string): Promise<CustomerEntity | null> {
     const customer = await this.prisma.customer.findUnique({
       where: { email },
+    });
+
+    if (customer === null) {
+      return null;
+    }
+
+    return mapPrismaCustomerToEntity(customer as PrismaCustomerRecord);
+  }
+
+  public async findByTaxId(taxId: string): Promise<CustomerEntity | null> {
+    const customer = await this.prisma.customer.findUnique({
+      where: { taxId },
     });
 
     if (customer === null) {

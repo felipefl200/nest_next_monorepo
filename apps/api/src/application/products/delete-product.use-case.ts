@@ -1,5 +1,6 @@
 import { Injectable, Inject } from "@nestjs/common";
 import { PRODUCT_REPOSITORY } from "../../domain/tokens";
+import { ConflictException } from "../../domain/exceptions/conflict.exception";
 import { NotFoundException } from "../../domain/exceptions/not-found.exception";
 import type { IProductRepository } from "../../domain/products/product.types";
 
@@ -15,6 +16,12 @@ export class DeleteProductUseCase {
 
     if (!product) {
       throw new NotFoundException("PRODUCT_NOT_FOUND", "Product not found");
+    }
+
+    const orderItemCount = await this.productRepository.countOrderItemsByProductId(id);
+
+    if (orderItemCount > 0) {
+      throw new ConflictException("PRODUCT_HAS_ORDER_ITEMS", "Product has associated order items");
     }
 
     await this.productRepository.delete(id);

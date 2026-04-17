@@ -21,7 +21,7 @@ import {
   updateOrderSchema,
   listOrdersQuerySchema,
 } from "../../domain/orders/order.schemas";
-import type { CreateOrderInput, OrderStatus } from "../../domain/orders/order.types";
+import type { CreateOrderInput, UpdateOrderInput } from "../../domain/orders/order.types";
 
 @Controller("orders")
 @UseGuards(JwtAuthGuard)
@@ -66,7 +66,13 @@ export class OrdersController {
     @Body() body: unknown,
   ) {
     const validated = updateOrderSchema.parse(body);
-    return this.updateOrderUseCase.execute(id, validated.status as OrderStatus);
+    const input: UpdateOrderInput = {
+      customerId: validated.customerId,
+      status: validated.status,
+      items: validated.items,
+    };
+
+    return this.updateOrderUseCase.execute(id, input);
   }
 
   @Delete(":id")

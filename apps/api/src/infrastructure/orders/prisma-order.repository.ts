@@ -6,9 +6,10 @@ import type {
   OrderEntity,
   OrderItemData,
   ListOrdersQuery,
-  PaginatedResult,
   OrderStatus,
+  UpdateOrderInput,
 } from "../../domain/orders/order.types";
+import type { PaginatedResult } from "../../domain/shared/pagination.types";
 
 type PrismaOrderWithRelations = {
   id: string;
@@ -22,6 +23,9 @@ type PrismaOrderWithRelations = {
   items: {
     id: string;
     productId: string;
+    product: {
+      name: string;
+    };
     quantity: number;
     unitPrice: number;
   }[];
@@ -40,6 +44,7 @@ function mapPrismaOrderToEntity(order: PrismaOrderWithRelations): OrderEntity {
     items: order.items.map(
       (item): OrderItemData => ({
         productId: item.productId,
+        productName: item.product?.name ?? "",
         quantity: item.quantity,
         unitPrice: item.unitPrice.toString(),
       }),
@@ -81,11 +86,19 @@ export class PrismaOrderRepository implements IOrderRepository {
             name: true,
           },
         },
-        items: true,
+        items: {
+          include: {
+            product: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
       },
     });
 
-    return mapPrismaOrderToEntity(order as PrismaOrderWithRelations);
+    return mapPrismaOrderToEntity(order as unknown as PrismaOrderWithRelations);
   }
 
   public async findById(id: string): Promise<OrderEntity | null> {
@@ -97,7 +110,15 @@ export class PrismaOrderRepository implements IOrderRepository {
             name: true,
           },
         },
-        items: true,
+        items: {
+          include: {
+            product: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
       },
     });
 
@@ -105,7 +126,7 @@ export class PrismaOrderRepository implements IOrderRepository {
       return null;
     }
 
-    return mapPrismaOrderToEntity(order as PrismaOrderWithRelations);
+    return mapPrismaOrderToEntity(order as unknown as PrismaOrderWithRelations);
   }
 
   public async findByNumber(number: string): Promise<OrderEntity | null> {
@@ -117,7 +138,15 @@ export class PrismaOrderRepository implements IOrderRepository {
             name: true,
           },
         },
-        items: true,
+        items: {
+          include: {
+            product: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
       },
     });
 
@@ -125,7 +154,7 @@ export class PrismaOrderRepository implements IOrderRepository {
       return null;
     }
 
-    return mapPrismaOrderToEntity(order as PrismaOrderWithRelations);
+    return mapPrismaOrderToEntity(order as unknown as PrismaOrderWithRelations);
   }
 
   public async list(query: ListOrdersQuery): Promise<PaginatedResult<OrderEntity>> {
@@ -154,7 +183,15 @@ export class PrismaOrderRepository implements IOrderRepository {
               name: true,
             },
           },
-          items: true,
+          items: {
+            include: {
+              product: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
         },
       }),
       this.prisma.order.count({ where }),
@@ -163,7 +200,7 @@ export class PrismaOrderRepository implements IOrderRepository {
     const totalPages = Math.ceil(total / perPage);
 
     return {
-      data: (orders as PrismaOrderWithRelations[]).map(mapPrismaOrderToEntity),
+      data: (orders as unknown as PrismaOrderWithRelations[]).map(mapPrismaOrderToEntity),
       total,
       page,
       perPage,
@@ -171,21 +208,51 @@ export class PrismaOrderRepository implements IOrderRepository {
     };
   }
 
-  public async updateStatus(id: string, status: OrderStatus): Promise<OrderEntity> {
-    const order = await this.prisma.order.update({
-      where: { id },
-      data: { status },
-      include: {
-        customer: {
-          select: {
-            name: true,
+  public async update(id: string, input: UpdateOrderInput): Promise<OrderEntity> {
+    const total = input.items.reduce(
+      (sum, item) => sum + Number.parseFloat(item.unitPrice) * item.quantity,
+      0,
+    );
+
+    const order = await this.prisma.$transaction(async (transaction) => {
+      await transaction.orderItem.deleteMany({
+        where: { orderId: id },
+      });
+
+      return transaction.order.update({
+        where: { id },
+        data: {
+          customerId: input.customerId,
+          status: input.status,
+          total,
+          items: {
+            create: input.items.map((item) => ({
+              productId: item.productId,
+              quantity: item.quantity,
+              unitPrice: Number.parseFloat(item.unitPrice),
+            })),
           },
         },
-        items: true,
-      },
+        include: {
+          customer: {
+            select: {
+              name: true,
+            },
+          },
+          items: {
+            include: {
+              product: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      });
     });
 
-    return mapPrismaOrderToEntity(order as PrismaOrderWithRelations);
+    return mapPrismaOrderToEntity(order as unknown as PrismaOrderWithRelations);
   }
 
   public async delete(id: string): Promise<void> {

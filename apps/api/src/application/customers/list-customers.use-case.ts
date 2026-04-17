@@ -4,8 +4,8 @@ import type {
   CustomerEntity,
   ICustomerRepository,
   ListCustomersQuery,
-  PaginatedResult,
 } from "../../domain/customers/customer.types";
+import type { PaginatedResult } from "../../domain/shared/pagination.types";
 
 export type ListCustomersResult = PaginatedResult<CustomerEntity>;
 

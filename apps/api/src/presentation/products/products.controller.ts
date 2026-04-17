@@ -56,6 +56,7 @@ export class ProductsController {
       perPage: validated.perPage,
       category: validated.category,
       isActive: validated.isActive,
+      search: validated.search,
     });
   }
 

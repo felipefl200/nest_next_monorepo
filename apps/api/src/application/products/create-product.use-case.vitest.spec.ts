@@ -22,6 +22,7 @@ function createMockRepository(): IProductRepository {
   return {
     create: vi.fn(async () => mockProduct),
     findById: vi.fn(async () => null),
+    findManyByIds: vi.fn(async () => []),
     list: vi.fn(async () => ({
       data: [],
       total: 0,
@@ -31,6 +32,7 @@ function createMockRepository(): IProductRepository {
     })),
     update: vi.fn(async () => mockProduct),
     delete: vi.fn(async () => undefined),
+    countOrderItemsByProductId: vi.fn(async () => 0),
   };
 }
 

@@ -4,8 +4,8 @@ import type {
   IProductRepository,
   ListProductsQuery,
   ProductEntity,
-  PaginatedResult,
 } from "../../domain/products/product.types";
+import type { PaginatedResult } from "../../domain/shared/pagination.types";
 
 export type ListProductsResult = PaginatedResult<ProductEntity>;
 
