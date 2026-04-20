@@ -22,6 +22,9 @@ export async function proxy(request: NextRequest) {
   if (isProtectedRoute(pathname)) {
     if (!hasAccess) {
       if (hasRefresh) {
+        // On Next.js 16+, proxy is a fast edge gate. When only the refresh token
+        // exists, prefer redirecting to the BFF refresh route instead of letting
+        // each protected page duplicate refresh orchestration.
         return NextResponse.redirect(buildRefreshUrl(request));
       }
 
@@ -31,8 +34,9 @@ export async function proxy(request: NextRequest) {
     const isAuthenticated = await isAuthenticatedRequest(request);
 
     if (!isAuthenticated) {
-      // Avoid redirecting an App Router navigation to an API route from the proxy.
-      // The server page and BFF route handlers still enforce auth against the API.
+      // Proxy is intentionally not the source of truth for authorization.
+      // It only performs a cheap signature/claims check to optimize navigation.
+      // Final enforcement stays in server components, route handlers, and Nest guards.
       return NextResponse.next();
     }
   }

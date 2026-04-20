@@ -48,6 +48,8 @@ export async function GET(request: Request) {
   const returnTo = requestUrl.searchParams.get("returnTo") || DEFAULT_LOGIN_REDIRECT;
 
   try {
+    // GET exists for browser navigations triggered by proxy/server redirects.
+    // The POST variant is used by client-side flows that expect a JSON contract.
     const auth = await refreshSession();
     const response = NextResponse.redirect(new URL(returnTo, request.url));
     persistAuthCookies(response.cookies, auth);

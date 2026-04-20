@@ -53,6 +53,8 @@ export function persistAuthCookies(
   const refreshTokenExpiresAt = getTokenExpirationDate(auth.refreshToken);
 
   cookieStore.set(AUTH_COOKIE_NAMES.accessToken, auth.accessToken, {
+    // Tokens stay in httpOnly cookies so the browser never needs direct token access.
+    // The Next.js app acts as the BFF boundary and forwards credentials server-side.
     httpOnly: true,
     secure: isSecureCookie(),
     sameSite: "strict",
@@ -61,6 +63,8 @@ export function persistAuthCookies(
   });
 
   cookieStore.set(AUTH_COOKIE_NAMES.refreshToken, auth.refreshToken, {
+    // Refresh token uses the same transport guarantees and a separate cookie name,
+    // which keeps rotation explicit and avoids coupling UI code to auth storage.
     httpOnly: true,
     secure: isSecureCookie(),
     sameSite: "strict",
